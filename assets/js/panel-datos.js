@@ -109,7 +109,8 @@
       { id: 'k1', cliente_id: 'c1', plazo_id: 'z1', fecha: '2026-09-12', importe_centimos: 9000, metodo: 'tarjeta' },
       { id: 'k2', cliente_id: 'c1', plazo_id: 'z4', fecha: '2026-10-07', importe_centimos: 3500, metodo: 'sepa' },
       { id: 'k3', cliente_id: 'c3', plazo_id: 'z9', fecha: '2026-10-07', importe_centimos: 3500, metodo: 'sepa' },
-      { id: 'k4', cliente_id: 'c3', plazo_id: 'z9', fecha: '2026-10-14', importe_centimos: -3500, metodo: 'sepa', notas: 'Devolución del banco' }
+      { id: 'k4', cliente_id: 'c3', plazo_id: 'z9', fecha: '2026-10-14', importe_centimos: -3500, metodo: 'sepa', notas: 'Devolución del banco' },
+      { id: 'k5', cliente_id: 'c4', plazo_id: null, fecha: dia(-1), importe_centimos: 48000, metodo: 'transferencia', referencia: 'AMPA-OCT', notas: 'Octubre, patinaje' }
     ];
 
     function plazosDe(clienteId) {
@@ -169,6 +170,52 @@
       guardarNotas: function (id, notas) {
         clientes.forEach(function (c) { if (c.id === id) c.notas = notas; });
         return espera(true);
+      },
+
+      /* ---- cobros ---- */
+      listarPlazos: function () {
+        if (modo === 'error') return fallo();
+        if (modo === 'vacio') return espera([]);
+        return espera(plazos.map(function (p) {
+          var i = inscripciones.filter(function (x) { return x.id === p.inscripcion_id; })[0] || {};
+          var c = clientes.filter(function (x) { return x.id === i.cliente_id; })[0] || {};
+          var per = personas.filter(function (x) { return x.id === i.persona_id; })[0];
+          return Object.assign({}, p, {
+            cliente: { id: c.id, nombre: c.nombre, nif: c.nif || '' },
+            actividad: actividades[i.actividad_id] || null,
+            persona: per ? { nombre: per.nombre } : null,
+            sepa_posible: !!c.sepa
+          });
+        }));
+      },
+      listarCobros: function (desde, hasta) {
+        if (modo === 'error') return fallo();
+        if (modo === 'vacio') return espera([]);
+        return espera(cobros.filter(function (k) { return k.fecha >= desde && k.fecha <= hasta; }).map(function (k) {
+          var c = clientes.filter(function (x) { return x.id === k.cliente_id; })[0] || {};
+          var p = plazos.filter(function (x) { return x.id === k.plazo_id; })[0] || {};
+          return Object.assign({}, k, { cliente: { nombre: c.nombre, nif: c.nif || '' }, concepto: p.concepto || '' });
+        }));
+      },
+      apuntarCobro: function (plazoId, d) {
+        var p = plazos.filter(function (x) { return x.id === plazoId; })[0];
+        if (!p || (p.estado !== 'pendiente' && p.estado !== 'devuelto')) return Promise.reject(new Error('Ese plazo ya no está pendiente'));
+        if (!(d.importe_centimos > 0 && d.importe_centimos <= p.importe_centimos)) return Promise.reject(new Error('Importe no válido'));
+        if (d.importe_centimos < p.importe_centimos) {
+          plazos.push(Object.assign({}, p, { id: 'z' + (plazos.length + 100), concepto: p.concepto + ' (resto)',
+            importe_centimos: p.importe_centimos - d.importe_centimos, estado: 'pendiente' }));
+          p.importe_centimos = d.importe_centimos;
+        }
+        p.estado = 'cobrado'; p.metodo = d.metodo;
+        var i = inscripciones.filter(function (x) { return x.id === p.inscripcion_id; })[0] || {};
+        cobros.push({ id: 'k' + (cobros.length + 100), cliente_id: i.cliente_id, plazo_id: p.id, fecha: d.fecha,
+          importe_centimos: d.importe_centimos, metodo: d.metodo, referencia: d.referencia || null, notas: d.notas || null });
+        return espera(plazoId);
+      },
+      cobrarSepa: function (plazoId) {
+        var p = plazos.filter(function (x) { return x.id === plazoId; })[0];
+        if (p && (p.estado === 'pendiente' || p.estado === 'devuelto')) { p.estado = 'procesando'; return espera({ lanzados: 1, saltados: [], errores: [] }); }
+        return espera({ lanzados: 0, saltados: [(p && p.concepto) + ': ya no está pendiente'], errores: [] });
       }
     };
   }
@@ -245,6 +292,52 @@
       },
       guardarNotas: function (id, notas) {
         return sb.from('clientes').update({ notas: notas }).eq('id', id).then(ok).then(function () { return true; });
+      },
+
+      /* ---- cobros ---- */
+      listarPlazos: function () {
+        return Promise.all([
+          sb.from('plazos').select('*').order('vence').then(ok),
+          sb.from('inscripciones').select('id,reserva_id,cliente_id, actividad:actividades(nombre,tipo), persona:personas(nombre), cliente:clientes(id,nombre,nif)').then(ok),
+          /* plazos-cobrar cobra contra el mandato de la RESERVA */
+          sb.from('reservas').select('id,sepa_pm').not('sepa_pm', 'is', null).then(ok)
+        ]).then(function (r) {
+          var porId = {}, porReserva = {}, conSepa = {};
+          r[1].forEach(function (i) { porId[i.id] = i; if (i.reserva_id) porReserva[i.reserva_id] = i; });
+          r[2].forEach(function (x) { conSepa[x.id] = true; });
+          return r[0].map(function (p) {
+            var i = porId[p.inscripcion_id] || porReserva[p.reserva_id] || {};
+            return Object.assign({}, p, {
+              cliente: i.cliente || { id: null, nombre: 'Sin cliente', nif: '' },
+              actividad: i.actividad || null,
+              persona: i.persona || null,
+              sepa_posible: !!(p.reserva_id && conSepa[p.reserva_id])
+            });
+          });
+        });
+      },
+      listarCobros: function (desde, hasta) {
+        return sb.from('cobros').select('*, cliente:clientes(nombre,nif), plazo:plazos(concepto)')
+          .gte('fecha', desde).lte('fecha', hasta).order('fecha').then(ok).then(function (l) {
+            return l.map(function (k) { k.concepto = k.plazo ? k.plazo.concepto : ''; return k; });
+          });
+      },
+      apuntarCobro: function (plazoId, d) {
+        return sb.rpc('apuntar_cobro', {
+          p_plazo: plazoId, p_importe_centimos: d.importe_centimos, p_metodo: d.metodo,
+          p_fecha: d.fecha, p_referencia: d.referencia || null, p_notas: d.notas || null
+        }).then(ok);
+      },
+      cobrarSepa: function (plazoId) {
+        return sb.functions.invoke('plazos-cobrar', { body: { plazo: plazoId } }).then(function (r) {
+          if (r.error) {
+            /* la función contesta con un mensaje propio cuando dice que no */
+            return (r.error.context && r.error.context.json ? r.error.context.json() : Promise.resolve({}))
+              .catch(function () { return {}; })
+              .then(function (j) { throw new Error(j.mensaje || j.error || r.error.message); });
+          }
+          return r.data;
+        });
       }
     };
   }

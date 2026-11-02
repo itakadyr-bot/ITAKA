@@ -71,7 +71,7 @@
       '</div><div class="pn-acciones-pag">' +
         (c.telefono ? '<a class="pn-boton" href="tel:' + esc(c.telefono.replace(/\s/g, '')) + '"><i data-lucide="phone" aria-hidden="true"></i>Llamar</a>' : '') +
         (c.email ? '<a class="pn-boton" href="mailto:' + esc(c.email) + '"><i data-lucide="mail" aria-hidden="true"></i>Escribir</a>' : '') +
-        '<a class="pn-boton primario" aria-disabled="true" title="Llega con la pantalla de cobros"><i data-lucide="plus" aria-hidden="true"></i>Apuntar cobro</a>' +
+        (n.pendientes + n.devueltos ? '<a class="pn-boton primario" href="' + P.enlace('admin/cobros/?cliente=' + encodeURIComponent(c.id)) + '"><i data-lucide="wallet" aria-hidden="true"></i>Cobrar</a>' : '') +
       '</div></div>' +
 
       '<dl class="pn-cifras">' +

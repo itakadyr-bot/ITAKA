@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cobros — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../assets/css/panel.css">
+</head>
+<body class="panel" data-seccion="cobros" data-ruta="Cobros" data-raiz="../../">
+
+<main class="pn-pagina" id="contenido">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo">Cobros · plazos y recibos</p>
+      <h1>Lo que queda por cobrar</h1>
+      <p class="pn-subtitulo" id="subtitulo">Plazos de campamentos y cuotas, con lo vencido primero.</p>
+    </div>
+  </div>
+
+  <dl class="pn-cifras" id="cifras" aria-busy="true">
+    <div><dt>Vencido</dt><dd><span class="pn-esqueleto" style="width:110px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Devuelto por el banco</dt><dd><span class="pn-esqueleto" style="width:90px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Vence en 7 días</dt><dd><span class="pn-esqueleto" style="width:90px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Cobrado este mes</dt><dd><span class="pn-esqueleto" style="width:110px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+  </dl>
+
+  <div class="pn-columnas">
+    <section aria-labelledby="titulo-lista">
+      <h2 id="titulo-lista" class="solo-lector">Plazos</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center;margin-bottom:var(--s-4)">
+        <div class="pn-segmento" role="group" aria-label="Mostrar" id="segmento">
+          <button aria-pressed="true" data-vista="vencidos">Vencidos</button>
+          <button aria-pressed="false" data-vista="devueltos">Devueltos</button>
+          <button aria-pressed="false" data-vista="proximos">Próximos</button>
+          <button aria-pressed="false" data-vista="banco">En el banco</button>
+          <button aria-pressed="false" data-vista="cobrados">Cobrados</button>
+        </div>
+        <label class="pn-buscar"><span class="solo-lector">Buscar</span><i data-lucide="search" aria-hidden="true"></i>
+          <input class="pn-entrada" type="search" id="buscar" placeholder="Familia, niño o concepto" autocomplete="off"></label>
+      </div>
+      <div class="pn-aviso" id="aviso-cliente" hidden></div>
+
+      <div class="pn-tarjeta">
+        <div class="pn-tabla-caja" id="caja-tabla" aria-busy="true">
+          <table class="pn-tabla apilable">
+            <caption class="solo-lector" id="resumen-tabla">Cargando plazos</caption>
+            <thead><tr>
+              <th scope="col" class="sel"><input type="checkbox" class="pn-casilla" id="todas" aria-label="Seleccionar todos los de la lista"></th>
+              <th scope="col">Vence</th>
+              <th scope="col" class="principal">Cliente</th>
+              <th scope="col" class="ancho-solo">Forma</th>
+              <th scope="col">Estado</th>
+              <th scope="col" class="num">Importe</th>
+              <th scope="col"><span class="solo-lector">Acciones</span></th>
+            </tr></thead>
+            <tbody id="filas">
+              <tr><td colspan="7"><span class="pn-esqueleto" style="width:60%"></span></td></tr>
+              <tr><td colspan="7"><span class="pn-esqueleto" style="width:75%"></span></td></tr>
+              <tr><td colspan="7"><span class="pn-esqueleto" style="width:50%"></span></td></tr>
+            </tbody>
+            <tfoot id="pie" hidden><tr><td></td><td colspan="4" id="pie-texto">Total</td><td class="num" id="pie-total"></td><td></td></tr></tfoot>
+          </table>
+        </div>
+        <div id="sin-filas" hidden></div>
+      </div>
+
+      <div class="pn-seleccion" id="seleccion" hidden>
+        <span aria-live="polite" id="cuenta-sel">0 seleccionados</span>
+        <span class="pn-hueco"></span>
+        <button class="pn-boton peq primario" id="btn-sepa">Cobrar por SEPA</button>
+      </div>
+    </section>
+
+    <aside>
+      <section class="pn-tarjeta" aria-labelledby="titulo-contable">
+        <div class="pn-cab"><h2 id="titulo-contable">Para la contable</h2></div>
+        <div class="pn-cuerpo" style="display:grid;gap:var(--s-3)">
+          <p style="margin:0;color:var(--c-text-muted)">Todo lo cobrado y devuelto en un mes, listo para facturar y cuadrar.</p>
+          <div class="pn-campo">
+            <label for="mes">Mes</label>
+            <input class="pn-entrada" type="month" id="mes">
+          </div>
+          <button class="pn-boton" id="btn-contable"><i data-lucide="download" aria-hidden="true"></i>Descargar cobros del mes</button>
+        </div>
+      </section>
+      <section class="pn-tarjeta" aria-labelledby="titulo-como">
+        <div class="pn-cab"><h2 id="titulo-como">Cómo funciona</h2></div>
+        <ul class="pn-filas">
+          <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Domiciliados</h3><p>Se cobran por SEPA. El banco tarda unos días: mientras, salen «En el banco».</p></div></li>
+          <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Efectivo o transferencia</h3><p>Pulsa «Apuntar». Si pagan una parte, el resto queda pendiente con la misma fecha.</p></div></li>
+          <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Devueltos</h3><p>Se pueden volver a pasar por SEPA o apuntar si pagan de otra forma.</p></div></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<dialog class="pn-modal" id="modal" aria-labelledby="modal-titulo">
+  <form id="form-cobro" novalidate>
+    <div class="pn-cuerpo" style="display:grid;gap:var(--s-4)">
+      <div>
+        <h2 id="modal-titulo">Apuntar cobro</h2>
+        <p id="modal-detalle"></p>
+      </div>
+      <div class="pn-form" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        <div class="pn-campo">
+          <label for="c-importe">Importe cobrado (€)</label>
+          <input class="pn-entrada" id="c-importe" inputmode="decimal" autocomplete="off" aria-describedby="c-importe-ayuda c-importe-err">
+          <span class="pn-ayuda" id="c-importe-ayuda"></span>
+          <span class="pn-error" id="c-importe-err" hidden></span>
+        </div>
+        <div class="pn-campo">
+          <label for="c-metodo">Forma de pago</label>
+          <select class="pn-entrada" id="c-metodo">
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="tarjeta">Tarjeta (datáfono)</option>
+          </select>
+        </div>
+        <div class="pn-campo">
+          <label for="c-fecha">Fecha</label>
+          <input class="pn-entrada" id="c-fecha" type="date" aria-describedby="c-fecha-err">
+          <span class="pn-error" id="c-fecha-err" hidden></span>
+        </div>
+        <div class="pn-campo">
+          <label for="c-ref">Referencia <span style="font-weight:400;color:var(--c-text-muted)">(opcional)</span></label>
+          <input class="pn-entrada" id="c-ref" autocomplete="off" placeholder="Nº de recibo o concepto de la transferencia">
+        </div>
+        <div class="pn-campo ancho">
+          <label for="c-notas">Notas <span style="font-weight:400;color:var(--c-text-muted)">(opcional)</span></label>
+          <input class="pn-entrada" id="c-notas" autocomplete="off">
+        </div>
+      </div>
+      <div class="pn-aviso mal" id="c-error" role="alert" hidden></div>
+    </div>
+    <div class="pn-pie">
+      <button type="button" class="pn-boton" id="c-cancelar">Cancelar</button>
+      <button type="submit" class="pn-boton primario" id="c-guardar">Apuntar cobro</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="pn-modal" id="modal-sepa" aria-labelledby="sepa-titulo">
+  <div class="pn-cuerpo">
+    <h2 id="sepa-titulo">¿Cobrar por SEPA?</h2>
+    <p id="sepa-detalle"></p>
+  </div>
+  <form method="dialog" class="pn-pie">
+    <button class="pn-boton" value="no" autofocus>Cancelar</button>
+    <button class="pn-boton primario" value="si" id="sepa-si">Cobrar</button>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../assets/js/db.js"></script>
+<script src="../../assets/js/panel.js"></script>
+<script src="../../assets/js/panel-datos.js"></script>
+<script src="../../assets/js/panel-cobros.js"></script>
+</body>
+</html>

@@ -33,7 +33,7 @@
   var PRINCIPAL = [
     { id: 'inicio', texto: 'Resumen', href: 'admin/inicio/', pronto: true },
     { id: 'clientes', texto: 'Clientes', href: 'admin/clientes/' },
-    { id: 'cobros', texto: 'Cobros', href: 'admin/cobros/', pronto: true },
+    { id: 'cobros', texto: 'Cobros', href: 'admin/cobros/' },
     { id: 'actividades', texto: 'Actividades', href: 'admin/actividades/', pronto: true }
   ];
   var GRUPOS = [
