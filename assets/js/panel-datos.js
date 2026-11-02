@@ -75,7 +75,7 @@
       { id: 'p2', cliente_id: 'c1', rol: 'participante', nombre: 'Lucía Ortega Ruiz', nacimiento: '2017-03-14', salud: { alergias: 'Frutos secos', sip: '0000000' }, autorizaciones: { fotos: 'sí' } },
       { id: 'p3', cliente_id: 'c1', rol: 'participante', nombre: 'Mario Ortega Ruiz', nacimiento: '2019-11-02', salud: {}, autorizaciones: { fotos: 'no' } },
       { id: 'p4', cliente_id: 'c2', rol: 'tutor', nombre: 'Hugo Navarro', telefono: '600 333 444' },
-      { id: 'p5', cliente_id: 'c2', rol: 'participante', nombre: 'Marta Navarro', nacimiento: '2016-06-30', salud: { observaciones: 'Lleva gafas' }, autorizaciones: { fotos: 'sí' } },
+      { id: 'p5', cliente_id: 'c2', rol: 'participante', nombre: 'Marta Navarro', anyo_nacimiento: 2016, salud: { observaciones: 'Lleva gafas' }, autorizaciones: { fotos: 'sí' } },
       { id: 'p6', cliente_id: 'c3', rol: 'tutor', nombre: 'Pablo Ibáñez', telefono: '600 555 666' },
       { id: 'p7', cliente_id: 'c3', rol: 'participante', nombre: 'Daniel Ibáñez', nacimiento: '2015-01-21', salud: { alergias: 'Penicilina' }, autorizaciones: { fotos: 'sí' } },
       { id: 'p8', cliente_id: 'c4', rol: 'contacto', nombre: 'Rosa (presidenta)', telefono: '600 999 000' },

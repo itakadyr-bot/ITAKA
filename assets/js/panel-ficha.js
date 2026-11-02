@@ -129,6 +129,8 @@
       var aut = p.autorizaciones || {};
       var detalle = [ROL[p.rol] || p.rol];
       if (edad != null) detalle.push(edad + ' años');
+      /* de la web a veces solo llega el año: edad aproximada */
+      else if (p.anyo_nacimiento) detalle.push('año de nacimiento ' + p.anyo_nacimiento + ' (unos ' + (new Date().getFullYear() - p.anyo_nacimiento) + ' años)');
       if (p.telefono) detalle.push(p.telefono);
       var datosSalud = '';
       if (p.rol === 'participante') {

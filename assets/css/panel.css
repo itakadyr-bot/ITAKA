@@ -41,17 +41,17 @@ body.panel .solo-lector {
 .panel .pn-marca span { font: var(--t-base); color: var(--c-text-muted); }
 
 .panel .pn-nav { display: grid; gap: 2px; }
-.panel .pn-nav a {
+.panel .pn-nav a, .panel .pn-nav .pronto {
   display: flex; align-items: center; gap: var(--s-3);
   font: var(--t-nav); color: var(--c-text);
   padding: var(--s-3) var(--s-4); border-radius: var(--r-md);
 }
-.panel .pn-nav a svg { width: 20px; height: 20px; flex: none; color: var(--c-text-muted); }
+.panel .pn-nav a svg, .panel .pn-nav .pronto svg { width: 20px; height: 20px; flex: none; color: var(--c-text-muted); }
 .panel .pn-nav a:hover { background: var(--c-surface-hover); color: var(--c-text-strong); }
 .panel .pn-nav a[aria-current="page"] { background: var(--c-accent-soft); color: var(--c-accent-strong); font-weight: 700; }
 .panel .pn-nav a[aria-current="page"] svg { color: var(--c-accent); }
-.panel .pn-nav a.pronto { color: var(--c-text-subtle); }
-.panel .pn-nav a.pronto::after { content: "pronto"; margin-left: auto; font: var(--t-xs); text-transform: uppercase; letter-spacing: .08em; }
+.panel .pn-nav .pronto { color: var(--c-text-subtle); cursor: default; }
+.panel .pn-nav .pronto::after { content: "pronto"; margin-left: auto; font: var(--t-xs); text-transform: uppercase; letter-spacing: .08em; }
 
 .panel .pn-grupo summary {
   list-style: none; cursor: pointer; display: flex; align-items: center; gap: var(--s-2);

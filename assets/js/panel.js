@@ -55,6 +55,11 @@
   }
 
   function enlace(e) {
+    /* lo que aún no existe no es un enlace: así nadie acaba en un 404 */
+    if (e.pronto) {
+      return '<span class="pronto" aria-disabled="true"><i data-lucide="' + (ICONO[e.id] || 'circle') +
+        '" aria-hidden="true"></i>' + esc(e.texto) + '<span class="solo-lector"> (próximamente)</span></span>';
+    }
     var actual = e.id === SECCION;
     var href = RAIZ + e.href + (DEMO ? '?demo' : '');
     return '<a href="' + href + '"' + (actual ? ' aria-current="page"' : '') +
