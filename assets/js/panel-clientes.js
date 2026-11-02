@@ -19,6 +19,8 @@
   var sinFilas = document.getElementById('sin-filas');
   var resumenTabla = document.getElementById('resumen-tabla');
 
+  document.getElementById('btn-nuevo').href = P.enlace('admin/clientes/editar/');
+
   P.entrar().then(function (sesion) {
     var DATOS = window.DATOS_PANEL.crear(sesion);
     return DATOS.listarClientes({}).then(function (lista) {

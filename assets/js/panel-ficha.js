@@ -69,6 +69,7 @@
         '<h1>' + esc(c.nombre) + '</h1>' +
         '<p class="pn-subtitulo">' + (contacto.length ? esc(contacto.join(' · ')) : 'Sin teléfono ni email apuntados') + '</p>' +
       '</div><div class="pn-acciones-pag">' +
+        '<a class="pn-boton" href="' + P.enlace('admin/clientes/editar/?id=' + encodeURIComponent(c.id)) + '"><i data-lucide="pencil" aria-hidden="true"></i>Editar</a>' +
         (c.telefono ? '<a class="pn-boton" href="tel:' + esc(c.telefono.replace(/\s/g, '')) + '"><i data-lucide="phone" aria-hidden="true"></i>Llamar</a>' : '') +
         (c.email ? '<a class="pn-boton" href="mailto:' + esc(c.email) + '"><i data-lucide="mail" aria-hidden="true"></i>Escribir</a>' : '') +
         (n.pendientes + n.devueltos ? '<a class="pn-boton primario" href="' + P.enlace('admin/cobros/?cliente=' + encodeURIComponent(c.id)) + '"><i data-lucide="wallet" aria-hidden="true"></i>Cobrar</a>' : '') +

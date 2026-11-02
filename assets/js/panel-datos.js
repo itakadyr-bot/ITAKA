@@ -67,7 +67,9 @@
       { id: 'c5', tipo: 'ayuntamiento', nombre: 'Ayuntamiento de Villanueva del Río (Concejalía de Deportes)', email: 'deportes@example.com',
         telefono: '965 222 333', nif: 'P0000000A', direccion: 'Plaza Mayor 1', etiquetas: ['programa municipal'], notas: '', sepa: false, creado: '2026-03-01' },
       { id: 'c6', tipo: 'familia', nombre: 'Familia Benavente-Santamaría de los Llanos y Castellanos', email: 'larguisimo.correo.de.familia@example.com',
-        telefono: '600 777 888', direccion: '', etiquetas: [], notas: '', sepa: false, creado: hoy }
+        telefono: '600 777 888', direccion: '', etiquetas: [], notas: '', sepa: false, creado: hoy },
+      { id: 'c7', tipo: 'familia', nombre: 'Familia Ortega', email: 'carmen.trabajo@example.com', telefono: '600 111 222',
+        direccion: '', etiquetas: [], notas: 'Reservó la fiesta con el email del trabajo.', sepa: false, creado: '2026-10-20' }
     ];
 
     var personas = [
@@ -79,7 +81,8 @@
       { id: 'p6', cliente_id: 'c3', rol: 'tutor', nombre: 'Pablo Ibáñez', telefono: '600 555 666' },
       { id: 'p7', cliente_id: 'c3', rol: 'participante', nombre: 'Daniel Ibáñez', nacimiento: '2015-01-21', salud: { alergias: 'Penicilina' }, autorizaciones: { fotos: 'sí' } },
       { id: 'p8', cliente_id: 'c4', rol: 'contacto', nombre: 'Rosa (presidenta)', telefono: '600 999 000' },
-      { id: 'p9', cliente_id: 'c5', rol: 'contacto', nombre: 'Técnico de deportes', telefono: '965 222 334' }
+      { id: 'p9', cliente_id: 'c5', rol: 'contacto', nombre: 'Técnico de deportes', telefono: '965 222 334' },
+      { id: 'p10', cliente_id: 'c7', rol: 'participante', nombre: 'Lucía Ortega', anyo_nacimiento: 2017, salud: { observaciones: 'Gafas' }, autorizaciones: {} }
     ];
 
     var inscripciones = [
@@ -89,7 +92,8 @@
       { id: 'i4', cliente_id: 'c2', persona_id: 'p5', actividad_id: 'a2', estado: 'activa', importe_centimos: 3500, alta: '2026-10-02' },
       { id: 'i5', cliente_id: 'c3', persona_id: 'p7', actividad_id: 'a2', estado: 'activa', importe_centimos: 3500, alta: '2026-09-25' },
       { id: 'i6', cliente_id: 'c3', persona_id: 'p7', actividad_id: 'a1', estado: 'espera', importe_centimos: 0, alta: '2026-10-20' },
-      { id: 'i7', cliente_id: 'c4', persona_id: null, actividad_id: 'a3', estado: 'activa', importe_centimos: 0, alta: '2026-09-01' }
+      { id: 'i7', cliente_id: 'c4', persona_id: null, actividad_id: 'a3', estado: 'activa', importe_centimos: 0, alta: '2026-09-01' },
+      { id: 'i8', cliente_id: 'c7', persona_id: 'p10', actividad_id: 'a4', estado: 'activa', importe_centimos: 1500, alta: '2026-10-20' }
     ];
 
     var plazos = [
@@ -216,6 +220,64 @@
         var p = plazos.filter(function (x) { return x.id === plazoId; })[0];
         if (p && (p.estado === 'pendiente' || p.estado === 'devuelto')) { p.estado = 'procesando'; return espera({ lanzados: 1, saltados: [], errores: [] }); }
         return espera({ lanzados: 0, saltados: [(p && p.concepto) + ': ya no está pendiente'], errores: [] });
+      },
+
+      /* ---- alta, edición y unión ---- */
+      guardarCliente: function (d) {
+        var email = (d.email || '').trim().toLowerCase();
+        var otro = email && clientes.filter(function (c) { return (c.email || '').toLowerCase() === email && c.id !== d.id; })[0];
+        if (otro) {
+          var e = new Error('Ya hay otro cliente con el email ' + email);
+          e.duplicado = true; e.otroId = otro.id;
+          return new Promise(function (_, mal) { setTimeout(function () { mal(e); }, 300); });
+        }
+        var c = d.id && clientes.filter(function (x) { return x.id === d.id; })[0];
+        if (!c) { c = { id: 'c' + (clientes.length + 100), creado: hoy, sepa: false }; clientes.push(c); }
+        ['tipo', 'nombre', 'nif', 'telefono', 'direccion', 'notas'].forEach(function (k) { c[k] = d[k] || ''; });
+        c.email = email; c.etiquetas = d.etiquetas || [];
+        for (var b = 0; b < (d.borrar_personas || []).length; b++) {
+          var id = d.borrar_personas[b];
+          if (inscripciones.some(function (i) { return i.persona_id === id && i.estado !== 'baja'; })) {
+            var nombre = (personas.filter(function (p) { return p.id === id; })[0] || {}).nombre;
+            return Promise.reject(new Error('No se puede quitar a ' + nombre + ' porque está inscrito en una actividad'));
+          }
+        }
+        personas = personas.filter(function (p) { return (d.borrar_personas || []).indexOf(p.id) < 0; });
+        (d.personas || []).forEach(function (p) {
+          if (!p.nombre) return;
+          var x = p.id && personas.filter(function (y) { return y.id === p.id; })[0];
+          if (!x) { x = { id: 'p' + (personas.length + 100), cliente_id: c.id }; personas.push(x); }
+          Object.assign(x, p, { id: x.id, cliente_id: c.id });
+        });
+        return espera(c.id);
+      },
+      unirPersonas: function (queda, seVa) {
+        var q = personas.filter(function (p) { return p.id === queda; })[0];
+        var s = personas.filter(function (p) { return p.id === seVa; })[0];
+        if (!q || !s) return Promise.reject(new Error('Alguna de las dos personas no existe'));
+        inscripciones.forEach(function (i) {
+          if (i.persona_id !== seVa) return;
+          var choca = inscripciones.some(function (x) { return x.persona_id === queda && x.actividad_id === i.actividad_id && x.estado !== 'baja'; });
+          if (choca && i.estado !== 'baja') { i.estado = 'baja'; i.notas = 'Duplicada: se unió con otra ficha del mismo niño'; }
+          i.persona_id = queda;
+        });
+        q.salud = Object.assign({}, s.salud || {}, q.salud || {});
+        q.nacimiento = q.nacimiento || s.nacimiento; q.anyo_nacimiento = q.anyo_nacimiento || s.anyo_nacimiento;
+        personas = personas.filter(function (p) { return p.id !== seVa; });
+        return espera(queda);
+      },
+      unirClientes: function (queda, seVa) {
+        var q = clientes.filter(function (c) { return c.id === queda; })[0];
+        var s = clientes.filter(function (c) { return c.id === seVa; })[0];
+        if (!q || !s) return Promise.reject(new Error('Alguna de las dos fichas no existe'));
+        personas.forEach(function (p) { if (p.cliente_id === seVa) p.cliente_id = queda; });
+        inscripciones.forEach(function (i) { if (i.cliente_id === seVa) i.cliente_id = queda; });
+        cobros.forEach(function (k) { if (k.cliente_id === seVa) k.cliente_id = queda; });
+        ['nif', 'email', 'telefono', 'direccion'].forEach(function (k) { q[k] = q[k] || s[k]; });
+        q.sepa = q.sepa || s.sepa;
+        q.notas = [q.notas, s.notas, s.email && q.email !== s.email ? 'Otro email: ' + s.email : ''].filter(Boolean).join('\n');
+        clientes = clientes.filter(function (c) { return c.id !== seVa; });
+        return espera(queda);
       }
     };
   }
@@ -338,6 +400,24 @@
           }
           return r.data;
         });
+      },
+
+      /* ---- alta, edición y unión ---- */
+      guardarCliente: function (d) {
+        return sb.rpc('guardar_cliente', { datos: d }).then(function (r) {
+          if (r.error && r.error.code === '23505') {
+            var e = new Error(r.error.message);
+            e.duplicado = true; e.otroId = r.error.hint || null;
+            throw e;
+          }
+          return ok(r);
+        });
+      },
+      unirPersonas: function (queda, seVa) {
+        return sb.rpc('unir_personas', { p_queda: queda, p_se_va: seVa }).then(ok);
+      },
+      unirClientes: function (queda, seVa) {
+        return sb.rpc('unir_clientes', { p_queda: queda, p_se_va: seVa }).then(ok);
       }
     };
   }

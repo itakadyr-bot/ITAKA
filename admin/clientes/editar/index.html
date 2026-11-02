@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cliente — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../../assets/css/panel.css">
+</head>
+<body class="panel" data-seccion="clientes" data-ruta="Clientes|Nuevo" data-raiz="../../../">
+
+<main class="pn-pagina" id="contenido" aria-busy="true">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo" id="antetitulo">Clientes · nuevo</p>
+      <h1 id="titulo">Nuevo cliente</h1>
+      <p class="pn-subtitulo" id="subtitulo">Familia, colegio, AMPA, ayuntamiento o empresa.</p>
+    </div>
+  </div>
+  <div id="formulario"><div class="pn-tarjeta pn-cuerpo"><span class="pn-esqueleto" style="width:60%"></span></div></div>
+</main>
+
+<dialog class="pn-modal" id="modal-unir" aria-labelledby="unir-titulo">
+  <div class="pn-cuerpo">
+    <h2 id="unir-titulo">¿Unir a estas dos personas?</h2>
+    <p id="unir-detalle"></p>
+  </div>
+  <form method="dialog" class="pn-pie">
+    <button class="pn-boton" value="no" autofocus>Cancelar</button>
+    <button class="pn-boton primario" value="si">Unir</button>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../../assets/js/db.js"></script>
+<script src="../../../assets/js/panel.js"></script>
+<script src="../../../assets/js/panel-datos.js"></script>
+<script src="../../../assets/js/panel-editar.js"></script>
+</body>
+</html>

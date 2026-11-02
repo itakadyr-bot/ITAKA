@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unir fichas — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../../assets/css/panel.css">
+<style>
+  .elegir { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--s-4); }
+  .elegir label { cursor: pointer; display: block; }
+  .elegir input[type="radio"] { position: absolute; opacity: 0; }
+  .elegir .pn-tarjeta { height: 100%; border-width: 2px; transition: border-color var(--m-fast) var(--m-ease); }
+  .elegir input:checked + .pn-tarjeta { border-color: var(--c-accent); }
+  .elegir input:focus-visible + .pn-tarjeta { box-shadow: var(--sombra-focus); }
+  .elegir .marca { display: none; }
+  .elegir input:checked + .pn-tarjeta .marca { display: inline-flex; }
+</style>
+</head>
+<body class="panel" data-seccion="clientes" data-ruta="Clientes|Unir fichas" data-raiz="../../../">
+
+<main class="pn-pagina" id="contenido">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo">Clientes · unir fichas</p>
+      <h1>Dos fichas, un mismo cliente</h1>
+      <p class="pn-subtitulo">Cuando una familia reservó con dos emails o un colegio se dio de alta dos veces.</p>
+    </div>
+  </div>
+  <div id="paso"><div class="pn-tarjeta pn-cuerpo"><span class="pn-esqueleto" style="width:50%"></span></div></div>
+</main>
+
+<dialog class="pn-modal" id="modal" aria-labelledby="m-titulo">
+  <div class="pn-cuerpo">
+    <h2 id="m-titulo">¿Unir las dos fichas?</h2>
+    <p id="m-detalle"></p>
+  </div>
+  <form method="dialog" class="pn-pie">
+    <button class="pn-boton" value="no" autofocus>Cancelar</button>
+    <button class="pn-boton primario" value="si">Unir fichas</button>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../../assets/js/db.js"></script>
+<script src="../../../assets/js/panel.js"></script>
+<script src="../../../assets/js/panel-datos.js"></script>
+<script src="../../../assets/js/panel-unir.js"></script>
+</body>
+</html>
