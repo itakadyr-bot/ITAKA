@@ -36,7 +36,7 @@ const SERVICE_KEY =
 const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const DESTINO = Deno.env.get("CORREO_DESTINO") ?? "itakadyr@gmail.com";
-const URL_BASE = (Deno.env.get("PAGOS_URL_BASE") ?? "https://itakadyr-bot.github.io/web/")
+const URL_BASE = (Deno.env.get("PAGOS_URL_BASE") ?? "https://itakarecreacion.com/")
   .replace(/\/*$/, "/");
 
 const CORS = {

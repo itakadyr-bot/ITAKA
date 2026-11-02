@@ -7,7 +7,7 @@ Esta es la web y la gestión de **Ítaka Deporte y Recreación**
 Incluye la web pública, las reservas de campamentos, el cobro de señales y
 domiciliaciones, la lista de espera y el panel de administración (`/admin/`).
 
-- Repo de GitHub: `itakadyr-bot/web`, servido con GitHub Pages (`CNAME`).
+- Repo de GitHub: `itakadyr-bot/itaka` (antes `itakadyr-bot/web`), servido con GitHub Pages (`CNAME`).
 - HTML estático + `assets/css/itaka.css` y `assets/js/` (ver `README.md`).
 - Funciones del servidor en `supabase/functions/` (Edge Functions de Supabase).
 

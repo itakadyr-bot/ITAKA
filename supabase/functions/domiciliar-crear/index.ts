@@ -28,7 +28,7 @@ const SERVICE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
   Deno.env.get("SUPABASE_SECRET_KEY") ?? "";
 const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
-const URL_BASE = (Deno.env.get("PAGOS_URL_BASE") ?? "https://itakadyr-bot.github.io/web/")
+const URL_BASE = (Deno.env.get("PAGOS_URL_BASE") ?? "https://itakarecreacion.com/")
   .replace(/\/*$/, "/");
 
 const CORS = {

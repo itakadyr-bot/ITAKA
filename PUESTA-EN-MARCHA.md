@@ -8,9 +8,9 @@ siguiente.
 
 ## ✅ 1 · GitHub (para publicar la web) — HECHO
 
-Repo: `github.com/itakadyr-bot/web` (con `escuelaapolana` de colaboradora
+Repo: `github.com/itakadyr-bot/itaka` (antes `itakadyr-bot/web`; con `escuelaapolana` de colaboradora
 para poder subir desde este ordenador). Web publicada en
-https://itakadyr-bot.github.io/web/ · Pasos originales, por si hay que
+https://itakarecreacion.com · Pasos originales, por si hay que
 repetirlos algún día:
 
 1. Crear una cuenta nueva de GitHub para Ítaka (por ejemplo `itakadyr`),
