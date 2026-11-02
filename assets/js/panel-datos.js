@@ -1,0 +1,256 @@
+/* ============================================================
+   PANEL DE GESTIÓN · datos
+   ------------------------------------------------------------
+   Las pantallas solo llaman a DATOS.algo(...) y reciben una
+   promesa. Hay dos versiones con las MISMAS funciones:
+     · demostración (?demo): datos inventados en memoria
+     · real: Supabase, con las tablas de replica/schema.sql
+   Cambiar de una a otra no toca ninguna pantalla.
+
+   Si las tablas nuevas aún no existen en la base, la versión real
+   falla con error.sinTablas = true y la pantalla lo explica.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* Plazos que cuentan como deuda y si ya ha vencido */
+  function cuentaPlazos(plazos, hoy) {
+    var r = { debe: 0, vencidos: 0, devueltos: 0, pendientes: 0 };
+    plazos.forEach(function (p) {
+      if (p.estado === 'pendiente') {
+        r.pendientes++; r.debe += p.importe_centimos;
+        if (p.vence < hoy) r.vencidos++;
+      } else if (p.estado === 'devuelto') {
+        r.devueltos++; r.debe += p.importe_centimos;
+      }
+    });
+    return r;
+  }
+
+  function filtrar(lista, f) {
+    f = f || {};
+    var q = (f.buscar || '').trim().toLowerCase();
+    return lista.filter(function (c) {
+      if (f.tipo === 'familia' && c.tipo !== 'familia') return false;
+      if (f.tipo === 'institucion' && c.tipo === 'familia') return false;
+      if (f.tipo === 'deuda' && !c.debe_centimos) return false;
+      if (!q) return true;
+      var texto = [c.nombre, c.email, c.telefono].concat(c.personas.map(function (p) { return p.nombre; }))
+        .join(' ').toLowerCase();
+      return texto.indexOf(q) >= 0;
+    });
+  }
+
+  /* ================= versión de demostración ================== */
+
+  function demo() {
+    var hoy = window.PANEL.hoy();
+    function dia(n) { var d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+
+    var actividades = {
+      a1: { id: 'a1', tipo: 'campamento', nombre: 'Campamento de verano · Riópar', empieza: '2027-07-01', termina: '2027-07-10' },
+      a2: { id: 'a2', tipo: 'extraescolar', nombre: 'Multideporte · martes y jueves', empieza: '2026-10-01', termina: '2027-06-20' },
+      a3: { id: 'a3', tipo: 'extraescolar', nombre: 'Patinaje · CEIP Los Almendros', empieza: '2026-10-01', termina: '2027-06-20' },
+      a4: { id: 'a4', tipo: 'evento', nombre: 'Fiesta de fin de curso', empieza: '2027-06-18', termina: '2027-06-18' }
+    };
+
+    var clientes = [
+      { id: 'c1', tipo: 'familia', nombre: 'Familia Ortega Ruiz', email: 'carmen.ruiz@example.com', telefono: '600 111 222',
+        direccion: 'C/ Mayor 12, Alicante', etiquetas: ['hermanos'], notas: 'Prefiere WhatsApp. Recoge la abuela los jueves.',
+        sepa: true, mandato_fecha: '2026-09-20', creado: '2026-09-12' },
+      { id: 'c2', tipo: 'familia', nombre: 'Familia Navarro', email: 'hugo.navarro@example.com', telefono: '600 333 444',
+        direccion: '', etiquetas: [], notas: '', sepa: false, creado: '2026-10-02' },
+      { id: 'c3', tipo: 'familia', nombre: 'Familia Ibáñez', email: 'p.ibanez@example.com', telefono: '600 555 666',
+        direccion: 'Av. de la Estación 4, Elda', etiquetas: [], notas: 'Recibo de octubre devuelto: llamar.', sepa: true, mandato_fecha: '2026-09-28', creado: '2026-09-25' },
+      { id: 'c4', tipo: 'ampa', nombre: 'AMPA CEIP Los Almendros', email: 'ampa.almendros@example.com', telefono: '965 000 111',
+        nif: 'G00000000', direccion: 'C/ de los Almendros s/n', etiquetas: ['extraescolares'], notas: 'Factura trimestral la hace la contable.', sepa: false, creado: '2026-06-15' },
+      { id: 'c5', tipo: 'ayuntamiento', nombre: 'Ayuntamiento de Villanueva del Río (Concejalía de Deportes)', email: 'deportes@example.com',
+        telefono: '965 222 333', nif: 'P0000000A', direccion: 'Plaza Mayor 1', etiquetas: ['programa municipal'], notas: '', sepa: false, creado: '2026-03-01' },
+      { id: 'c6', tipo: 'familia', nombre: 'Familia Benavente-Santamaría de los Llanos y Castellanos', email: 'larguisimo.correo.de.familia@example.com',
+        telefono: '600 777 888', direccion: '', etiquetas: [], notas: '', sepa: false, creado: hoy }
+    ];
+
+    var personas = [
+      { id: 'p1', cliente_id: 'c1', rol: 'tutor', nombre: 'Carmen Ruiz', telefono: '600 111 222', email: 'carmen.ruiz@example.com', dni: '00000000T' },
+      { id: 'p2', cliente_id: 'c1', rol: 'participante', nombre: 'Lucía Ortega Ruiz', nacimiento: '2017-03-14', salud: { alergias: 'Frutos secos', sip: '0000000' }, autorizaciones: { fotos: 'sí' } },
+      { id: 'p3', cliente_id: 'c1', rol: 'participante', nombre: 'Mario Ortega Ruiz', nacimiento: '2019-11-02', salud: {}, autorizaciones: { fotos: 'no' } },
+      { id: 'p4', cliente_id: 'c2', rol: 'tutor', nombre: 'Hugo Navarro', telefono: '600 333 444' },
+      { id: 'p5', cliente_id: 'c2', rol: 'participante', nombre: 'Marta Navarro', nacimiento: '2016-06-30', salud: { observaciones: 'Lleva gafas' }, autorizaciones: { fotos: 'sí' } },
+      { id: 'p6', cliente_id: 'c3', rol: 'tutor', nombre: 'Pablo Ibáñez', telefono: '600 555 666' },
+      { id: 'p7', cliente_id: 'c3', rol: 'participante', nombre: 'Daniel Ibáñez', nacimiento: '2015-01-21', salud: { alergias: 'Penicilina' }, autorizaciones: { fotos: 'sí' } },
+      { id: 'p8', cliente_id: 'c4', rol: 'contacto', nombre: 'Rosa (presidenta)', telefono: '600 999 000' },
+      { id: 'p9', cliente_id: 'c5', rol: 'contacto', nombre: 'Técnico de deportes', telefono: '965 222 334' }
+    ];
+
+    var inscripciones = [
+      { id: 'i1', cliente_id: 'c1', persona_id: 'p2', actividad_id: 'a1', estado: 'activa', importe_centimos: 39000, alta: '2026-09-12' },
+      { id: 'i2', cliente_id: 'c1', persona_id: 'p2', actividad_id: 'a2', estado: 'activa', importe_centimos: 3500, alta: '2026-10-01' },
+      { id: 'i3', cliente_id: 'c1', persona_id: 'p3', actividad_id: 'a2', estado: 'activa', importe_centimos: 3000, alta: '2026-10-01' },
+      { id: 'i4', cliente_id: 'c2', persona_id: 'p5', actividad_id: 'a2', estado: 'activa', importe_centimos: 3500, alta: '2026-10-02' },
+      { id: 'i5', cliente_id: 'c3', persona_id: 'p7', actividad_id: 'a2', estado: 'activa', importe_centimos: 3500, alta: '2026-09-25' },
+      { id: 'i6', cliente_id: 'c3', persona_id: 'p7', actividad_id: 'a1', estado: 'espera', importe_centimos: 0, alta: '2026-10-20' },
+      { id: 'i7', cliente_id: 'c4', persona_id: null, actividad_id: 'a3', estado: 'activa', importe_centimos: 0, alta: '2026-09-01' }
+    ];
+
+    var plazos = [
+      { id: 'z1', inscripcion_id: 'i1', concepto: 'Señal', importe_centimos: 9000, vence: '2026-09-12', estado: 'cobrado', metodo: 'tarjeta' },
+      { id: 'z2', inscripcion_id: 'i1', concepto: 'Segundo plazo', importe_centimos: 15000, vence: dia(40), estado: 'pendiente', metodo: 'sepa' },
+      { id: 'z3', inscripcion_id: 'i1', concepto: 'Último plazo', importe_centimos: 15000, vence: dia(150), estado: 'pendiente', metodo: 'sepa' },
+      { id: 'z4', inscripcion_id: 'i2', concepto: 'Cuota de octubre', importe_centimos: 3500, vence: '2026-10-05', estado: 'cobrado', metodo: 'sepa' },
+      { id: 'z5', inscripcion_id: 'i2', concepto: 'Cuota de noviembre', importe_centimos: 3500, vence: dia(3), estado: 'pendiente', metodo: 'sepa' },
+      { id: 'z6', inscripcion_id: 'i3', concepto: 'Cuota de noviembre', importe_centimos: 3000, vence: dia(3), estado: 'pendiente', metodo: 'sepa' },
+      { id: 'z7', inscripcion_id: 'i4', concepto: 'Cuota de octubre', importe_centimos: 3500, vence: '2026-10-05', estado: 'pendiente', metodo: 'efectivo' },
+      { id: 'z8', inscripcion_id: 'i4', concepto: 'Cuota de noviembre', importe_centimos: 3500, vence: dia(3), estado: 'pendiente', metodo: 'efectivo' },
+      { id: 'z9', inscripcion_id: 'i5', concepto: 'Cuota de octubre', importe_centimos: 3500, vence: '2026-10-05', estado: 'devuelto', metodo: 'sepa', devuelto_motivo: 'Fondos insuficientes' },
+      { id: 'z10', inscripcion_id: 'i5', concepto: 'Cuota de noviembre', importe_centimos: 3500, vence: dia(3), estado: 'pendiente', metodo: 'sepa' }
+    ];
+
+    var cobros = [
+      { id: 'k1', cliente_id: 'c1', plazo_id: 'z1', fecha: '2026-09-12', importe_centimos: 9000, metodo: 'tarjeta' },
+      { id: 'k2', cliente_id: 'c1', plazo_id: 'z4', fecha: '2026-10-07', importe_centimos: 3500, metodo: 'sepa' },
+      { id: 'k3', cliente_id: 'c3', plazo_id: 'z9', fecha: '2026-10-07', importe_centimos: 3500, metodo: 'sepa' },
+      { id: 'k4', cliente_id: 'c3', plazo_id: 'z9', fecha: '2026-10-14', importe_centimos: -3500, metodo: 'sepa', notas: 'Devolución del banco' }
+    ];
+
+    function plazosDe(clienteId) {
+      var ids = inscripciones.filter(function (i) { return i.cliente_id === clienteId; }).map(function (i) { return i.id; });
+      return plazos.filter(function (p) { return ids.indexOf(p.inscripcion_id) >= 0; });
+    }
+    function resumen(c) {
+      var n = cuentaPlazos(plazosDe(c.id), hoy);
+      return {
+        id: c.id, tipo: c.tipo, nombre: c.nombre, email: c.email, telefono: c.telefono, etiquetas: c.etiquetas,
+        domiciliado: !!c.sepa,
+        personas: personas.filter(function (p) { return p.cliente_id === c.id; }),
+        inscripciones_activas: inscripciones.filter(function (i) { return i.cliente_id === c.id && i.estado === 'activa'; }).length,
+        debe_centimos: n.debe, plazos_vencidos: n.vencidos, plazos_devueltos: n.devueltos, creado: c.creado
+      };
+    }
+    function espera(v) {
+      /* un poco de espera para ver los estados de carga */
+      return new Promise(function (ok) { setTimeout(function () { ok(JSON.parse(JSON.stringify(v))); }, 350); });
+    }
+    /* ?demo=vacio y ?demo=error para ver esos estados */
+    var modo = (location.search.match(/demo=(\w+)/) || [])[1];
+    function fallo() { return new Promise(function (_, mal) { setTimeout(function () { mal(new Error('Sin conexión (prueba)')); }, 350); }); }
+
+    return {
+      listarClientes: function (f) {
+        if (modo === 'error') return fallo();
+        if (modo === 'vacio') return espera([]);
+        return espera(filtrar(clientes.map(resumen), f));
+      },
+      obtenerCliente: function (id) {
+        if (modo === 'error') return fallo();
+        var c = clientes.filter(function (x) { return x.id === id; })[0];
+        if (!c) return espera(null);
+        var ins = inscripciones.filter(function (i) { return i.cliente_id === id; }).map(function (i) {
+          var r = Object.assign({}, i);
+          r.actividad = actividades[i.actividad_id];
+          r.persona = personas.filter(function (p) { return p.id === i.persona_id; })[0] || null;
+          return r;
+        });
+        var pz = plazosDe(id).map(function (p) {
+          var r = Object.assign({}, p);
+          var i = ins.filter(function (x) { return x.id === p.inscripcion_id; })[0];
+          r.actividad = i && i.actividad; r.persona = i && i.persona;
+          return r;
+        });
+        return espera({
+          cliente: { id: c.id, tipo: c.tipo, nombre: c.nombre, nif: c.nif || '', email: c.email, telefono: c.telefono,
+            direccion: c.direccion, etiquetas: c.etiquetas, notas: c.notas, domiciliado: !!c.sepa,
+            mandato_fecha: c.mandato_fecha || null, creado: c.creado },
+          personas: personas.filter(function (p) { return p.cliente_id === id; }),
+          inscripciones: ins,
+          plazos: pz,
+          cobros: cobros.filter(function (k) { return k.cliente_id === id; })
+        });
+      },
+      guardarNotas: function (id, notas) {
+        clientes.forEach(function (c) { if (c.id === id) c.notas = notas; });
+        return espera(true);
+      }
+    };
+  }
+
+  /* ================= versión real (Supabase) ================== */
+
+  function real(sb) {
+    var hoy = window.PANEL.hoy();
+
+    function ok(r) {
+      if (r.error) {
+        var e = new Error(r.error.message);
+        /* tabla que aún no existe: PGRST205 (caché de esquema) o 42P01 */
+        e.sinTablas = r.error.code === 'PGRST205' || r.error.code === '42P01';
+        throw e;
+      }
+      return r.data;
+    }
+
+    return {
+      listarClientes: function (f) {
+        return Promise.all([
+          sb.from('clientes').select('id,tipo,nombre,email,telefono,etiquetas,sepa_pm,created_at,personas(id,nombre,rol),inscripciones(id,estado)')
+            .order('nombre').then(ok),
+          sb.from('v_deuda_clientes').select('*').then(ok)
+        ]).then(function (r) {
+          var deuda = {};
+          r[1].forEach(function (d) { deuda[d.cliente_id] = d; });
+          var lista = r[0].map(function (c) {
+            var d = deuda[c.id] || {};
+            return {
+              id: c.id, tipo: c.tipo, nombre: c.nombre, email: c.email, telefono: c.telefono, etiquetas: c.etiquetas || [],
+              domiciliado: !!c.sepa_pm, personas: c.personas || [],
+              inscripciones_activas: (c.inscripciones || []).filter(function (i) { return i.estado === 'activa'; }).length,
+              debe_centimos: d.debe_centimos || 0, plazos_vencidos: d.plazos_vencidos || 0, plazos_devueltos: d.plazos_devueltos || 0,
+              creado: c.created_at
+            };
+          });
+          return filtrar(lista, f);
+        });
+      },
+      obtenerCliente: function (id) {
+        return Promise.all([
+          sb.from('clientes').select('*').eq('id', id).maybeSingle().then(ok),
+          sb.from('personas').select('*').eq('cliente_id', id).order('rol').order('nombre').then(ok),
+          sb.from('inscripciones').select('*, actividad:actividades(id,tipo,nombre,empieza,termina), persona:personas(id,nombre)')
+            .eq('cliente_id', id).order('alta', { ascending: false }).then(ok),
+          sb.from('cobros').select('*').eq('cliente_id', id).order('fecha', { ascending: false }).then(ok)
+        ]).then(function (r) {
+          var c = r[0];
+          if (!c) return null;
+          var ins = r[2];
+          var idsIns = ins.map(function (i) { return i.id; });
+          var idsRes = ins.map(function (i) { return i.reserva_id; }).filter(Boolean);
+          var consultas = [];
+          if (idsIns.length) consultas.push(sb.from('plazos').select('*').in('inscripcion_id', idsIns).then(ok));
+          if (idsRes.length) consultas.push(sb.from('plazos').select('*').in('reserva_id', idsRes).then(ok));
+          return Promise.all(consultas).then(function (listas) {
+            var vistos = {}, pz = [];
+            listas.forEach(function (l) { l.forEach(function (p) { if (!vistos[p.id]) { vistos[p.id] = 1; pz.push(p); } }); });
+            pz.forEach(function (p) {
+              var i = ins.filter(function (x) { return x.id === p.inscripcion_id || (p.reserva_id && x.reserva_id === p.reserva_id); })[0];
+              p.actividad = i && i.actividad; p.persona = i && i.persona;
+            });
+            pz.sort(function (a, b) { return a.vence < b.vence ? -1 : 1; });
+            return {
+              cliente: { id: c.id, tipo: c.tipo, nombre: c.nombre, nif: c.nif || '', email: c.email, telefono: c.telefono,
+                direccion: c.direccion, etiquetas: c.etiquetas || [], notas: c.notas || '', domiciliado: !!c.sepa_pm,
+                mandato_fecha: c.mandato_fecha, creado: c.created_at },
+              personas: r[1], inscripciones: ins, plazos: pz, cobros: r[3]
+            };
+          });
+        });
+      },
+      guardarNotas: function (id, notas) {
+        return sb.from('clientes').update({ notas: notas }).eq('id', id).then(ok).then(function () { return true; });
+      }
+    };
+  }
+
+  window.DATOS_PANEL = {
+    crear: function (sesion) { return sesion.demo ? demo() : real(sesion.cliente); },
+    cuentaPlazos: cuentaPlazos
+  };
+})();

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clientes — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../assets/css/panel.css">
+</head>
+<body class="panel" data-seccion="clientes" data-ruta="Clientes" data-raiz="../../">
+
+<main class="pn-pagina" id="contenido">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo">Clientes · familias e instituciones</p>
+      <h1>Todos los que confían en Ítaka</h1>
+      <p class="pn-subtitulo">Cada familia, colegio o ayuntamiento con lo que tiene contratado y lo que queda por cobrar.</p>
+    </div>
+    <div class="pn-acciones-pag">
+      <button class="pn-boton" id="btn-csv"><i data-lucide="download" aria-hidden="true"></i>Descargar CSV</button>
+      <a class="pn-boton primario pronto-boton" aria-disabled="true" title="Llega en el siguiente paso"><i data-lucide="plus" aria-hidden="true"></i>Nuevo cliente</a>
+    </div>
+  </div>
+
+  <dl class="pn-cifras" id="cifras" aria-busy="true">
+    <div><dt>Familias</dt><dd><span class="pn-esqueleto" style="width:70px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Instituciones</dt><dd><span class="pn-esqueleto" style="width:50px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Con pagos pendientes</dt><dd><span class="pn-esqueleto" style="width:50px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+    <div><dt>Por cobrar</dt><dd><span class="pn-esqueleto" style="width:110px;height:36px"></span></dd><div class="pn-nota">&nbsp;</div></div>
+  </dl>
+
+  <div class="pn-columnas">
+    <section aria-labelledby="titulo-lista">
+      <h2 id="titulo-lista" class="solo-lector">Lista de clientes</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center;margin-bottom:var(--s-4)">
+        <div class="pn-segmento" role="group" aria-label="Mostrar" id="segmento">
+          <button aria-pressed="true" data-tipo="">Todos</button>
+          <button aria-pressed="false" data-tipo="familia">Familias</button>
+          <button aria-pressed="false" data-tipo="institucion">Instituciones</button>
+          <button aria-pressed="false" data-tipo="deuda">Deben algo</button>
+        </div>
+        <label class="pn-buscar"><span class="solo-lector">Buscar cliente</span><i data-lucide="search" aria-hidden="true"></i>
+          <input class="pn-entrada" type="search" id="buscar" placeholder="Nombre, niño, email o teléfono" autocomplete="off"></label>
+      </div>
+
+      <div class="pn-tarjeta">
+        <div class="pn-tabla-caja" id="caja-tabla" aria-busy="true">
+          <table class="pn-tabla apilable">
+            <caption class="solo-lector" id="resumen-tabla">Cargando clientes</caption>
+            <thead><tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Tipo</th>
+              <th scope="col" class="num">Inscripciones</th>
+              <th scope="col">Pagos</th>
+              <th scope="col" class="num">Pendiente</th>
+            </tr></thead>
+            <tbody id="filas">
+              <tr><td colspan="5"><span class="pn-esqueleto" style="width:60%"></span></td></tr>
+              <tr><td colspan="5"><span class="pn-esqueleto" style="width:75%"></span></td></tr>
+              <tr><td colspan="5"><span class="pn-esqueleto" style="width:50%"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="sin-filas" hidden></div>
+      </div>
+    </section>
+
+    <aside aria-labelledby="titulo-revisar">
+      <div class="pn-tarjeta">
+        <div class="pn-cab"><h2 id="titulo-revisar">Para revisar</h2></div>
+        <ul class="pn-filas" id="revisar" aria-busy="true">
+          <li><div><span class="pn-esqueleto" style="width:180px"></span></div></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../assets/js/db.js"></script>
+<script src="../../assets/js/panel.js"></script>
+<script src="../../assets/js/panel-datos.js"></script>
+<script src="../../assets/js/panel-clientes.js"></script>
+</body>
+</html>

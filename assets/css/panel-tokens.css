@@ -1,0 +1,74 @@
+/* GENERADO desde replica/design/tokens.json con
+   replica/design/generar-css.py. No editar a mano. */
+:root {
+  --c-bg: #f6f8f9;
+  --c-surface: #ffffff;
+  --c-surface-hover: #f8fafb;
+  --c-surface-sunken: #f1f4f7;
+  --c-border: #e9edf1;
+  --c-border-strong: #d8dee4;
+  --c-border-input: #8494a4;
+  --c-text: #2f3d4a;
+  --c-text-strong: #14202e;
+  --c-text-muted: #5b6b7d;
+  --c-text-subtle: #647384;
+  --c-accent: #0075c4;
+  --c-accent-strong: #00477f;
+  --c-accent-soft: #eaf7fd;
+  --c-on-accent: #ffffff;
+  --c-header: #0b121b;
+  --c-on-header: #ffffff;
+  --c-on-header-muted: #a7b4c1;
+  --c-highlight: #f5a623;
+  --c-danger: #b42318;
+  --c-danger-soft: #fdecea;
+  --c-on-danger: #ffffff;
+  --c-success: #2f6b2f;
+  --c-success-soft: #eef8ee;
+  --c-warning: #8a6d1f;
+  --c-warning-soft: #fdf6e7;
+  --c-neutral: #5b6b7d;
+  --c-neutral-soft: #f1f4f7;
+  --f-sans: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-display: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --t-xs: 600 12px/16px var(--f-sans);
+  --t-sm: 600 13px/18px var(--f-sans);
+  --t-base: 400 14px/20px var(--f-sans);
+  --t-md: 400 15px/22px var(--f-sans);
+  --t-lg: 600 18px/24px var(--f-display);
+  --t-xl: 700 38px/44px var(--f-display);
+  --t-stat: 600 34px/38px var(--f-display);
+  --t-eyebrow: 600 12px/16px var(--f-sans);
+  --t-subtitulo: 400 17px/26px var(--f-sans);
+  --t-nav: 500 15px/20px var(--f-sans);
+  --s-0: 0px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 48px;
+  --s-9: 80px;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+  --sombra-card: 0 1px 2px rgba(11,18,27,.04), 0 18px 40px -22px rgba(11,18,27,.2);
+  --sombra-pop: 0 24px 60px -20px rgba(11,18,27,.35);
+  --sombra-focus: 0 0 0 3px rgba(0,117,196,.35);
+  --m-fast: 120ms;
+  --m-base: 180ms;
+  --m-ease: ease;
+  --ancho-max: 1240px;
+  --margen: 24px;
+  --alto-cabecera: 64px;
+  --ancho-lateral: 272px;
+  --alto-barra: 72px;
+  --ancho-aside: 340px;
+}
+@media (max-width: 600px) {
+  :root { --margen: 16px; }
+}

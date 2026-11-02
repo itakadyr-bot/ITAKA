@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Componentes del panel — Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../assets/css/panel.css">
+<style>
+  /* Solo para este catálogo */
+  .muestra { margin: 0 0 var(--s-7); }
+  .muestra > h2 { font: var(--t-lg); color: var(--c-text-strong); margin: 0 0 var(--s-1); }
+  .muestra > p { margin: 0 0 var(--s-3); color: var(--c-text-muted); }
+  .fila { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+  .colores { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s-2); }
+  .color { border: 1px solid var(--c-border); border-radius: var(--r-md); overflow: hidden; background: var(--c-surface); font-size: 13px; }
+  .color i { display: block; height: 44px; }
+  .color span { display: block; padding: 6px 10px; }
+</style>
+</head>
+<body class="panel" data-seccion="" data-ruta="Componentes" data-raiz="../../">
+
+<main class="pn-pagina">
+  <div class="pn-titulo">
+    <h1>Componentes del panel</h1>
+    <span class="pn-hueco"></span>
+    <span class="pn-chip info">Datos inventados</span>
+  </div>
+
+  <section class="muestra">
+    <h2>Colores</h2>
+    <p>Papeles de <code>replica/design/tokens.json</code>. Todos los textos pasan AA.</p>
+    <div class="colores" id="colores"></div>
+  </section>
+
+  <section class="muestra">
+    <h2>Cifras de resumen</h2>
+    <div class="pn-rejilla">
+      <dl class="pn-tarjeta pn-cifra"><dt>Familias</dt><dd>148</dd><div class="pn-nota">12 nuevas este mes</div></dl>
+      <dl class="pn-tarjeta pn-cifra peligro"><dt>Vencido sin cobrar</dt><dd>1.240 €</dd><div class="pn-nota">9 plazos</div></dl>
+      <dl class="pn-tarjeta pn-cifra"><dt>Inscritos en curso</dt><dd>312</dd><div class="pn-nota">en 14 actividades</div></dl>
+      <dl class="pn-tarjeta pn-cifra" aria-busy="true"><dt>Cargando</dt><dd><span class="pn-esqueleto" style="width:60%;height:30px"></span></dd></dl>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Botones</h2>
+    <div class="fila" style="margin-bottom:var(--s-2)">
+      <button class="pn-boton primario"><i data-lucide="plus" aria-hidden="true"></i>Nueva familia</button>
+      <button class="pn-boton">Exportar CSV</button>
+      <button class="pn-boton fantasma">Cancelar</button>
+      <button class="pn-boton peligro">Dar de baja</button>
+      <button class="pn-boton peligro lleno">Borrar</button>
+    </div>
+    <div class="fila">
+      <button class="pn-boton peq">Pequeño</button>
+      <button class="pn-boton gra primario">Grande</button>
+      <button class="pn-boton" disabled>Deshabilitado</button>
+      <button class="pn-boton primario" aria-busy="true">Guardando</button>
+      <button class="pn-boton" aria-busy="true">Cargando</button>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Filtros y chips</h2>
+    <div class="pn-filtros" role="group" aria-label="Tipo de cliente" style="margin-bottom:var(--s-3)">
+      <button class="pn-filtro" aria-pressed="true">Todos<span class="pn-cuenta">164</span></button>
+      <button class="pn-filtro" aria-pressed="false">Familias<span class="pn-cuenta">148</span></button>
+      <button class="pn-filtro" aria-pressed="false">Colegios<span class="pn-cuenta">7</span></button>
+      <button class="pn-filtro" aria-pressed="false">AMPAs<span class="pn-cuenta">5</span></button>
+      <button class="pn-filtro" aria-pressed="false">Ayuntamientos<span class="pn-cuenta">4</span></button>
+    </div>
+    <div class="fila">
+      <span class="pn-chip">Pendiente</span>
+      <span class="pn-chip ok">Cobrado</span>
+      <span class="pn-chip aviso">Efectivo</span>
+      <span class="pn-chip mal">Vencido</span>
+      <span class="pn-chip mal">Devuelto</span>
+      <span class="pn-chip info">Procesando</span>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Tabla con selección</h2>
+    <p>Marca filas para ver la barra de acciones. En el móvil se apila.</p>
+    <div class="pn-tarjeta">
+      <div class="pn-cab">
+        <label class="pn-buscar"><span class="solo-lector">Buscar</span><i data-lucide="search" aria-hidden="true"></i><input class="pn-entrada" type="search" placeholder="Buscar familia, niño o email"></label>
+      </div>
+      <div class="pn-tabla-caja">
+        <table class="pn-tabla apilable" id="tabla">
+          <thead><tr>
+            <th scope="col" class="sel"><input type="checkbox" class="pn-casilla" id="todas" aria-label="Seleccionar todas"></th>
+            <th scope="col">Familia</th><th scope="col">Actividad</th><th scope="col">Vence</th><th scope="col">Estado</th><th scope="col" class="num">Importe</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="sel"><input type="checkbox" class="pn-casilla" aria-label="Seleccionar Familia Ortega"></td><td data-titulo="Familia"><a href="#">Familia Ortega</a><span class="sub">Lucía Ortega</span></td><td data-titulo="Actividad">Campamento de verano</td><td data-titulo="Vence">15/06</td><td data-titulo="Estado"><span class="pn-chip mal">Vencido</span></td><td data-titulo="Importe" class="num">180,00 €</td></tr>
+            <tr><td class="sel"><input type="checkbox" class="pn-casilla" aria-label="Seleccionar Familia Navarro"></td><td data-titulo="Familia"><a href="#">Familia Navarro</a><span class="sub">Hugo y Marta Navarro</span></td><td data-titulo="Actividad">Multideporte (martes)</td><td data-titulo="Vence">01/11</td><td data-titulo="Estado"><span class="pn-chip">Pendiente</span></td><td data-titulo="Importe" class="num">35,00 €</td></tr>
+            <tr><td class="sel"><input type="checkbox" class="pn-casilla" aria-label="Seleccionar Familia Ibáñez"></td><td data-titulo="Familia"><a href="#">Familia Ibáñez</a><span class="sub">Pablo Ibáñez</span></td><td data-titulo="Actividad">Multideporte (jueves)</td><td data-titulo="Vence">01/10</td><td data-titulo="Estado"><span class="pn-chip mal">Devuelto</span></td><td data-titulo="Importe" class="num">35,00 €</td></tr>
+          </tbody>
+          <tfoot><tr><td></td><td colspan="4">Total pendiente</td><td class="num">250,00 €</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="pn-seleccion" id="seleccion" hidden>
+      <span aria-live="polite" id="cuenta-sel">0 seleccionados</span>
+      <span class="pn-hueco"></span>
+      <button class="pn-boton peq">Apuntar cobro</button>
+      <button class="pn-boton peq primario" id="btn-cobrar">Cobrar por SEPA</button>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Estados de una lista</h2>
+    <div class="pn-rejilla">
+      <div class="pn-tarjeta pn-vacio">
+        <i data-lucide="users" aria-hidden="true"></i>
+        <h3>Todavía no hay familias</h3>
+        <p>Aparecen solas cuando alguien reserva en la web. También puedes darlas de alta a mano.</p>
+        <button class="pn-boton primario">Nueva familia</button>
+      </div>
+      <div class="pn-tarjeta pn-vacio">
+        <i data-lucide="search-x" aria-hidden="true"></i>
+        <h3>Nada con ese filtro</h3>
+        <p>Prueba con otro nombre o quita el filtro de tipo.</p>
+        <button class="pn-boton">Quitar filtros</button>
+      </div>
+      <div class="pn-tarjeta pn-cuerpo" aria-busy="true">
+        <span class="pn-esqueleto" style="width:70%;margin-bottom:12px"></span>
+        <span class="pn-esqueleto" style="width:90%;margin-bottom:12px"></span>
+        <span class="pn-esqueleto" style="width:50%"></span>
+      </div>
+    </div>
+    <div style="display:grid;gap:var(--s-2);margin-top:var(--s-4)">
+      <div class="pn-aviso" role="status"><i data-lucide="info" aria-hidden="true"></i>Los recibos SEPA tardan unos días en confirmarse.</div>
+      <div class="pn-aviso ok" role="status"><i data-lucide="check-circle" aria-hidden="true"></i>Cobro apuntado.</div>
+      <div class="pn-aviso aviso" role="status"><i data-lucide="alert-triangle" aria-hidden="true"></i>A 2 monitores les caduca el certificado este mes.</div>
+      <div class="pn-aviso mal" role="alert"><i data-lucide="x-circle" aria-hidden="true"></i>No se ha podido cargar la lista. Revisa la conexión y pulsa Actualizar.</div>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Ficha con pestañas</h2>
+    <div class="pn-tarjeta">
+      <div class="pn-cab"><h2>Familia Ortega</h2><span class="pn-chip ok">Domiciliada</span></div>
+      <div class="pn-pestanas" role="tablist" aria-label="Ficha">
+        <button class="pn-pestana" role="tab" aria-selected="true" id="t1" aria-controls="p1">Personas<span class="pn-cuenta">3</span></button>
+        <button class="pn-pestana" role="tab" aria-selected="false" id="t2" aria-controls="p2" tabindex="-1">Inscripciones<span class="pn-cuenta">2</span></button>
+        <button class="pn-pestana" role="tab" aria-selected="false" id="t3" aria-controls="p3" tabindex="-1">Pagos</button>
+        <button class="pn-pestana" role="tab" aria-selected="false" id="t4" aria-controls="p4" tabindex="-1">Notas</button>
+      </div>
+      <div class="pn-cuerpo" role="tabpanel" id="p1" aria-labelledby="t1">
+        <dl class="pn-datos">
+          <div><dt>Participante</dt><dd>Lucía Ortega · 9 años</dd></div>
+          <div class="sensible"><dt>Alergias</dt><dd>Frutos secos</dd></div>
+          <div><dt>Tutora</dt><dd>Carmen Ruiz</dd></div>
+          <div><dt>Teléfono</dt><dd>600 000 000</dd></div>
+        </dl>
+      </div>
+      <div class="pn-cuerpo" role="tabpanel" id="p2" aria-labelledby="t2" hidden>Inscripciones…</div>
+      <div class="pn-cuerpo" role="tabpanel" id="p3" aria-labelledby="t3" hidden>Pagos…</div>
+      <div class="pn-cuerpo" role="tabpanel" id="p4" aria-labelledby="t4" hidden>Notas…</div>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Formulario</h2>
+    <form class="pn-tarjeta pn-cuerpo pn-form" id="form" novalidate>
+      <fieldset>
+        <legend>Datos básicos</legend>
+        <div class="pn-campo"><label for="f-nombre">Nombre de la familia</label><input class="pn-entrada" id="f-nombre" value="Familia Ortega"></div>
+        <div class="pn-campo"><label for="f-tipo">Tipo</label><select class="pn-entrada" id="f-tipo"><option>Familia</option><option>Colegio</option><option>AMPA</option><option>Ayuntamiento</option><option>Empresa</option></select></div>
+        <div class="pn-campo"><label for="f-email">Email</label><input class="pn-entrada" id="f-email" type="email" value="carmen@" aria-invalid="true" aria-describedby="f-email-err"><span class="pn-error" id="f-email-err">Falta lo que va detrás de la @.</span></div>
+        <div class="pn-campo"><label for="f-tel">Teléfono</label><input class="pn-entrada" id="f-tel" type="tel" aria-describedby="f-tel-ayuda"><span class="pn-ayuda" id="f-tel-ayuda">El que coge en horario de actividad.</span></div>
+        <div class="pn-campo"><label for="f-nif">NIF</label><input class="pn-entrada" id="f-nif" disabled value="Solo para instituciones"></div>
+        <div class="pn-campo ancho"><label for="f-notas">Notas</label><textarea class="pn-entrada" id="f-notas"></textarea></div>
+      </fieldset>
+      <div class="pn-acciones">
+        <button type="button" class="pn-boton fantasma">Cancelar</button>
+        <button type="submit" class="pn-boton primario">Guardar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="muestra">
+    <h2>Subir un ticket</h2>
+    <div class="pn-rejilla">
+      <label class="pn-subida">
+        <i data-lucide="upload" aria-hidden="true"></i>
+        <span><strong>Haz una foto o elige un archivo</strong><br>Imagen o PDF, hasta 10 MB</span>
+        <input type="file" accept="image/*,application/pdf" capture="environment">
+      </label>
+      <div class="pn-subida" aria-live="polite">
+        <i data-lucide="file-image" aria-hidden="true"></i>
+        <span><strong>ticket-gasolinera.jpg</strong><br>Subiendo…</span>
+        <div class="pn-progreso" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"><span style="width:60%"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Pasar lista</h2>
+    <div class="pn-tarjeta">
+      <div class="pn-cab"><h2>Multideporte · martes 17:00</h2></div>
+      <ul class="pn-lista" id="lista">
+        <li><span class="pn-nombre">Lucía Ortega<span class="sub">Alergia: frutos secos</span></span>
+          <span class="pn-presente" role="group" aria-label="Lucía Ortega"><button class="si" aria-pressed="true">Sí</button><button class="no" aria-pressed="false">No</button></span></li>
+        <li><span class="pn-nombre">Hugo Navarro</span>
+          <span class="pn-presente" role="group" aria-label="Hugo Navarro"><button class="si" aria-pressed="false">Sí</button><button class="no" aria-pressed="true">No</button></span></li>
+        <li><span class="pn-nombre">Marta Navarro</span>
+          <span class="pn-presente" role="group" aria-label="Marta Navarro"><button class="si" aria-pressed="false">Sí</button><button class="no" aria-pressed="false">No</button></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="muestra">
+    <h2>Avisos flotantes y confirmación</h2>
+    <div class="fila">
+      <button class="pn-boton" id="btn-toast">Aviso de hecho</button>
+      <button class="pn-boton" id="btn-toast-mal">Aviso de error</button>
+      <button class="pn-boton peligro" id="btn-modal">Dar de baja…</button>
+    </div>
+  </section>
+</main>
+
+<div class="pn-toasts" aria-live="polite" id="toasts"></div>
+
+<dialog class="pn-modal" id="modal" aria-labelledby="modal-titulo">
+  <div class="pn-cuerpo">
+    <h2 id="modal-titulo">¿Dar de baja a Lucía Ortega?</h2>
+    <p>Deja de contar en Multideporte desde hoy. Los plazos ya cobrados no se tocan; los pendientes se anulan.</p>
+  </div>
+  <form method="dialog" class="pn-pie">
+    <button class="pn-boton" value="no" autofocus>Cancelar</button>
+    <button class="pn-boton peligro lleno" value="si">Dar de baja</button>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../assets/js/db.js"></script>
+<script src="../../assets/js/panel.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (window.lucide) lucide.createIcons();
+
+  // Muestras de color leídas de los propios tokens
+  var css = getComputedStyle(document.documentElement);
+  var nombres = ['bg','surface','surface-sunken','border','border-strong','border-input','text','text-strong','text-muted','text-subtle',
+    'accent','accent-strong','accent-soft','header','highlight','danger','danger-soft','success','success-soft','warning','warning-soft'];
+  var caja = document.getElementById('colores');
+  nombres.forEach(function (n) {
+    var v = css.getPropertyValue('--c-' + n).trim();
+    var d = document.createElement('div');
+    d.className = 'color';
+    d.innerHTML = '<i style="background:' + v + '"></i><span><b>' + n + '</b><br>' + v + '</span>';
+    caja.appendChild(d);
+  });
+
+  // Selección en la tabla
+  var tabla = document.getElementById('tabla');
+  var todas = document.getElementById('todas');
+  var barra = document.getElementById('seleccion');
+  var cuenta = document.getElementById('cuenta-sel');
+  function casillas() { return tabla.querySelectorAll('tbody .pn-casilla'); }
+  function repintar() {
+    var n = 0;
+    casillas().forEach(function (c) {
+      c.closest('tr').setAttribute('aria-selected', c.checked ? 'true' : 'false');
+      if (c.checked) n++;
+    });
+    todas.checked = n === casillas().length;
+    todas.indeterminate = n > 0 && n < casillas().length;
+    barra.hidden = n === 0;
+    cuenta.textContent = n + (n === 1 ? ' seleccionado' : ' seleccionados');
+  }
+  todas.addEventListener('change', function () {
+    casillas().forEach(function (c) { c.checked = todas.checked; });
+    repintar();
+  });
+  tabla.addEventListener('change', function (e) { if (e.target !== todas) repintar(); });
+  document.getElementById('btn-cobrar').addEventListener('click', function () {
+    var b = this;
+    b.setAttribute('aria-busy', 'true');
+    setTimeout(function () { b.removeAttribute('aria-busy'); aviso('Cobros lanzados. Tardan unos días en confirmarse.'); }, 1200);
+  });
+
+  // Filtros: uno activo cada vez
+  document.querySelectorAll('.pn-filtros').forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      var b = e.target.closest('.pn-filtro');
+      if (!b) return;
+      g.querySelectorAll('.pn-filtro').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    });
+  });
+
+  // Pestañas con teclado
+  var lista = document.querySelector('[role="tablist"]');
+  var tabs = Array.prototype.slice.call(lista.querySelectorAll('[role="tab"]'));
+  function elegir(t) {
+    tabs.forEach(function (x) {
+      var sel = x === t;
+      x.setAttribute('aria-selected', sel ? 'true' : 'false');
+      x.tabIndex = sel ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !sel;
+    });
+    t.focus();
+  }
+  lista.addEventListener('click', function (e) { var t = e.target.closest('[role="tab"]'); if (t) elegir(t); });
+  lista.addEventListener('keydown', function (e) {
+    var i = tabs.indexOf(document.activeElement);
+    if (e.key === 'ArrowRight') elegir(tabs[(i + 1) % tabs.length]);
+    if (e.key === 'ArrowLeft') elegir(tabs[(i - 1 + tabs.length) % tabs.length]);
+  });
+
+  // Pasar lista
+  document.getElementById('lista').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    b.parentNode.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+  });
+
+  // Formulario: el error se va al corregir
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('f-email');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); return; }
+    aviso('Guardado.');
+  });
+  document.getElementById('f-email').addEventListener('input', function () {
+    var ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.value);
+    this.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    document.getElementById('f-email-err').hidden = ok;
+  });
+
+  // Avisos flotantes
+  var toasts = document.getElementById('toasts');
+  function aviso(texto, mal) {
+    var t = document.createElement('div');
+    t.className = 'pn-toast' + (mal ? ' mal' : '');
+    t.innerHTML = '<i data-lucide="' + (mal ? 'x-circle' : 'check-circle') + '" aria-hidden="true"></i><span></span>' + (mal ? '' : '<button type="button">Deshacer</button>');
+    t.querySelector('span').textContent = texto;
+    toasts.setAttribute('aria-live', mal ? 'assertive' : 'polite');
+    toasts.appendChild(t);
+    if (window.lucide) lucide.createIcons();
+    var quieto = false;
+    t.addEventListener('mouseenter', function () { quieto = true; });
+    t.addEventListener('mouseleave', function () { quieto = false; });
+    (function quitar() { setTimeout(function () { if (quieto) return quitar(); t.remove(); }, 5000); })();
+  }
+  document.getElementById('btn-toast').addEventListener('click', function () { aviso('Cobro apuntado.'); });
+  document.getElementById('btn-toast-mal').addEventListener('click', function () { aviso('No se ha podido guardar. Inténtalo otra vez.', true); });
+
+  // Confirmación
+  var modal = document.getElementById('modal');
+  var abridor = document.getElementById('btn-modal');
+  abridor.addEventListener('click', function () { modal.showModal(); });
+  modal.addEventListener('close', function () {
+    abridor.focus();
+    if (modal.returnValue === 'si') aviso('Baja hecha.');
+  });
+})();
+</script>
+</body>
+</html>
