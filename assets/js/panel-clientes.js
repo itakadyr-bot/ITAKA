@@ -20,6 +20,7 @@
   var resumenTabla = document.getElementById('resumen-tabla');
 
   document.getElementById('btn-nuevo').href = P.enlace('admin/clientes/editar/');
+  document.getElementById('btn-importar').href = P.enlace('admin/clientes/importar/');
 
   P.entrar().then(function (sesion) {
     var DATOS = window.DATOS_PANEL.crear(sesion);

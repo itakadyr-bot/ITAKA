@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Importar contactos — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../../assets/css/panel.css">
+<style>
+  .imp-tabla select.pn-entrada { min-height: 34px; padding: 4px 8px; width: auto; }
+  .imp-tabla td { vertical-align: top; }
+  .imp-tabla tr.desmarcada td:not(.sel) { opacity: .55; }
+</style>
+</head>
+<body class="panel" data-seccion="clientes" data-ruta="Clientes|Importar contactos" data-raiz="../../../">
+
+<main class="pn-pagina" id="contenido">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo">Clientes · importar</p>
+      <h1>Traer los contactos de Google</h1>
+      <p class="pn-subtitulo">Tú eliges quién entra. Nada se guarda hasta que pulses «Importar».</p>
+    </div>
+  </div>
+
+  <!-- paso 1: el archivo -->
+  <section id="paso-archivo" class="pn-columnas">
+    <div class="pn-tarjeta">
+      <div class="pn-cab"><h2>1 · El archivo</h2></div>
+      <div class="pn-cuerpo" style="display:grid;gap:var(--s-4)">
+        <label class="pn-subida" id="zona">
+          <i data-lucide="upload" aria-hidden="true"></i>
+          <span><strong>Elige el archivo exportado de Google Contacts</strong><br>CSV de Google o vCard (.vcf)</span>
+          <input type="file" id="archivo" accept=".csv,.vcf,text/csv,text/vcard,text/x-vcard">
+        </label>
+        <div class="pn-aviso mal" id="error-archivo" role="alert" hidden></div>
+        <p id="probar" hidden style="margin:0"><button type="button" class="pn-boton peq" id="btn-ejemplo">Probar con contactos de ejemplo</button></p>
+      </div>
+    </div>
+    <aside>
+      <div class="pn-tarjeta">
+        <div class="pn-cab"><h2>Cómo sacarlo de Google</h2></div>
+        <ul class="pn-filas">
+          <li style="grid-template-columns:auto minmax(0,1fr)"><span class="pn-hora">1</span><div><p style="margin:0">Entra en contacts.google.com con la cuenta de Ítaka.</p></div></li>
+          <li style="grid-template-columns:auto minmax(0,1fr)"><span class="pn-hora">2</span><div><p style="margin:0">Pulsa «Exportar», elige «Contactos» (todos) y el formato «CSV de Google».</p></div></li>
+          <li style="grid-template-columns:auto minmax(0,1fr)"><span class="pn-hora">3</span><div><p style="margin:0">Súbelo aquí. Se lee en este ordenador: el archivo no se envía a ningún sitio.</p></div></li>
+        </ul>
+      </div>
+    </aside>
+  </section>
+
+  <!-- paso 2: revisar -->
+  <section id="paso-revisar" hidden>
+    <dl class="pn-cifras" id="cifras"></dl>
+    <div style="display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center;margin-bottom:var(--s-4)">
+      <div class="pn-segmento" role="group" aria-label="Mostrar" id="segmento">
+        <button aria-pressed="true" data-v="recomendados">Recomendados</button>
+        <button aria-pressed="false" data-v="sin">Sin clasificar</button>
+        <button aria-pressed="false" data-v="existen">Ya en el panel</button>
+        <button aria-pressed="false" data-v="todos">Todos</button>
+      </div>
+      <label class="pn-buscar"><span class="solo-lector">Buscar</span><i data-lucide="search" aria-hidden="true"></i>
+        <input class="pn-entrada" type="search" id="buscar" placeholder="Nombre, email o teléfono" autocomplete="off"></label>
+    </div>
+    <div class="pn-tarjeta">
+      <div class="pn-tabla-caja">
+        <table class="pn-tabla apilable imp-tabla">
+          <caption class="solo-lector" id="resumen-tabla"></caption>
+          <thead><tr>
+            <th scope="col" class="sel"><input type="checkbox" class="pn-casilla" id="todas" aria-label="Marcar o desmarcar todos los de la lista"></th>
+            <th scope="col" class="principal">Contacto</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Qué pasará</th>
+          </tr></thead>
+          <tbody id="filas"></tbody>
+        </table>
+      </div>
+      <div id="sin-filas" hidden></div>
+    </div>
+    <div class="pn-seleccion" id="barra">
+      <span aria-live="polite" id="cuenta"></span>
+      <span class="pn-hueco"></span>
+      <button class="pn-boton peq" id="btn-otro">Otro archivo</button>
+      <button class="pn-boton peq primario" id="btn-importar">Importar</button>
+    </div>
+  </section>
+
+  <!-- paso 3: resultado -->
+  <section id="paso-fin" hidden></section>
+</main>
+
+<dialog class="pn-modal" id="modal" aria-labelledby="m-titulo">
+  <div class="pn-cuerpo">
+    <h2 id="m-titulo">¿Importar?</h2>
+    <p id="m-detalle"></p>
+  </div>
+  <form method="dialog" class="pn-pie">
+    <button class="pn-boton" value="no" autofocus>Cancelar</button>
+    <button class="pn-boton primario" value="si">Importar</button>
+  </form>
+</dialog>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../../assets/js/db.js"></script>
+<script src="../../../assets/js/panel.js"></script>
+<script src="../../../assets/js/panel-datos.js"></script>
+<script src="../../../assets/js/panel-importar.js"></script>
+</body>
+</html>
