@@ -37,6 +37,14 @@
   var form = document.getElementById('form-acceso');
   var aviso = document.getElementById('acceso-aviso');
 
+  /* Si ya hay sesión y se viene del panel, directamente de vuelta. */
+  var volverYa = new URLSearchParams(location.search).get('volver') || '';
+  if (/^\/[A-Za-z0-9\/._?=&%-]*$/.test(volverYa) && volverYa.indexOf('//') < 0 && window.ITAKA.haySesionGuardada()) {
+    window.ITAKA.conCliente().then(function (c) { return c.auth.getSession(); }).then(function (r) {
+      if (r && r.data && r.data.session) location.replace(volverYa);
+    }).catch(function () { /* sin sesión válida: se queda el formulario */ });
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     aviso.style.color = '#8494a4';
@@ -49,8 +57,12 @@
     }).then(function (r) {
       if (r.error) throw r.error;
       aviso.style.color = '#14202e';
-      aviso.textContent = 'Dentro. Llevándote a la portada…';
-      location.href = '../';
+      /* ?volver=/admin/clientes/ → tras entrar, de vuelta al panel.
+         Solo rutas de esta misma web: nada de saltar a otro dominio. */
+      var volver = new URLSearchParams(location.search).get('volver') || '';
+      var seguro = /^\/[A-Za-z0-9\/._?=&%-]*$/.test(volver) && volver.indexOf('//') < 0;
+      aviso.textContent = seguro ? 'Dentro. Volviendo a la gestión…' : 'Dentro. Llevándote a la portada…';
+      location.href = seguro ? volver : '../';
     }).catch(function (err) {
       aviso.style.color = '#b42318';
       aviso.textContent = /credential/i.test(err.message || '')

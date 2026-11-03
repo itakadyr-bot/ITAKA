@@ -185,7 +185,8 @@
   function parar(texto, conAcceso) {
     main.innerHTML = '<div class="pn-tarjeta pn-vacio" role="alert">' +
       '<i data-lucide="lock" aria-hidden="true"></i><h3>Sin acceso</h3><p>' + esc(texto) + '</p>' +
-      (conAcceso ? '<a class="pn-boton primario" href="' + RAIZ + 'acceso/">Ir al acceso</a> ' : '') +
+      (conAcceso ? '<a class="pn-boton primario" href="' + RAIZ + 'acceso/?volver=' +
+        encodeURIComponent(location.pathname + location.search) + '">Iniciar sesión</a> ' : '') +
       '<a class="pn-boton" href="?demo">Ver la demostración</a></div>';
     iconos();
     return new Promise(function () {});

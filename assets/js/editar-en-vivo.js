@@ -91,8 +91,8 @@
     btnGuardar = boton('Guardar', function () { guarda(); });
     btnDescartar = boton('Descartar', function () { descarta(); }, 'secundario');
     var enlaceListas = document.createElement('a');
-    enlaceListas.href = window.ITAKA.BASE + 'admin/';
-    enlaceListas.textContent = '📋 Listas';
+    enlaceListas.href = window.ITAKA.BASE + 'gestion/';
+    enlaceListas.textContent = '📋 Gestión';
     enlaceListas.style.cssText = 'background:rgba(255,255,255,.12);color:#fff;font:inherit;' +
       'padding:10px 18px;border-radius:999px;text-decoration:none';
     var btnSalir = boton('Salir', function () {
