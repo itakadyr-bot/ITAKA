@@ -23,7 +23,9 @@
   P.entrar().then(function (sesion) {
     DATOS = window.DATOS_PANEL.crear(sesion);
     if (!id) return null;
-    return DATOS.obtenerCliente(id);
+    /* las facturas van aparte: si su tabla aún no existe, la ficha sigue */
+    return Promise.all([DATOS.obtenerCliente(id), DATOS.listarFacturas(id).catch(function () { return null; })])
+      .then(function (r) { if (r[0]) r[0].facturas = r[1]; return r[0]; });
   }).then(function (f) {
     main.setAttribute('aria-busy', 'false');
     if (!f) return noEncontrado();
@@ -65,8 +67,9 @@
 
     main.innerHTML =
       '<div class="pn-cabecera"><div>' +
-        '<p class="pn-antetitulo">' + esc([TIPOS[c.tipo] || 'Cliente', desde].filter(Boolean).join(' · ')) + '</p>' +
-        '<h1>' + esc(c.nombre) + '</h1>' +
+        '<p class="pn-antetitulo">Clientes / ' + esc([TIPOS[c.tipo] || 'Cliente', desde].filter(Boolean).join(' · ')) + '</p>' +
+        '<div class="pn-con-iniciales" style="gap:var(--s-4)"><span class="pn-iniciales gra" aria-hidden="true">' + esc(P.iniciales(c.nombre)) + '</span>' +
+        '<h1>' + esc(c.nombre) + '</h1></div>' +
         '<p class="pn-subtitulo">' + (contacto.length ? esc(contacto.join(' · ')) : 'Sin teléfono ni email apuntados') + '</p>' +
       '</div><div class="pn-acciones-pag">' +
         '<a class="pn-boton" href="' + P.enlace('admin/clientes/editar/?id=' + encodeURIComponent(c.id)) + '"><i data-lucide="pencil" aria-hidden="true"></i>Editar</a>' +
@@ -92,11 +95,13 @@
             pestana('inscripciones', 'Inscripciones', f.inscripciones.length) +
             pestana('pagos', 'Pagos', f.plazos.length) +
             pestana('movimientos', 'Movimientos', f.cobros.length) +
+            pestana('facturas', 'Facturas', f.facturas ? f.facturas.length : 0) +
           '</div>' +
           panel('personas', personas(f.personas, c), true) +
           panel('inscripciones', inscripciones(f.inscripciones)) +
           panel('pagos', pagos(f.plazos, hoy)) +
           panel('movimientos', movimientos(f.cobros)) +
+          panel('facturas', listaFacturas(f.facturas, c)) +
         '</section>' +
         '<aside>' + avisos(f, n, c) + datos(c) + notas(c) + '</aside>' +
       '</div>';
@@ -198,6 +203,22 @@
         (k.notas ? '<p>' + esc(k.notas) + '</p>' : '') + '</div><strong style="font-variant-numeric:tabular-nums;color:' +
         (neg ? 'var(--c-danger)' : 'var(--c-text-strong)') + '">' + P.euros(k.importe_centimos) + '</strong></li>';
     }).join('') + '</ul>';
+  }
+
+  function listaFacturas(lista, c) {
+    var nueva = '<a class="pn-boton peq" href="' + P.enlace('admin/facturas/?cliente=' + encodeURIComponent(c.id) + '&nueva') + '"><i data-lucide="plus" aria-hidden="true"></i>Añadir factura</a>';
+    if (lista === null) return '<div class="pn-cuerpo"><p style="margin:0;color:var(--c-text-muted)">El registro de facturas todavía no está activado.</p></div>';
+    if (!lista.length) return '<div class="pn-vacio"><i data-lucide="file-text" aria-hidden="true"></i><h3>Sin facturas</h3><p>Las facturas que haga la contable a este cliente se guardan aquí con su PDF.</p>' + nueva + '</div>';
+    var ESTADO = { pendiente: '<span class="pn-chip aviso">Pendiente</span>', parcial: '<span class="pn-chip aviso">En parte</span>',
+      cobrada: '<span class="pn-chip ok">Cobrada</span>', anulada: '<span class="pn-chip">Anulada</span>' };
+    return '<ul class="pn-filas">' + lista.map(function (x) {
+      var venc = (x.estado === 'pendiente' || x.estado === 'parcial') && x.vence && x.vence < P.hoy();
+      return '<li><span class="pn-hora">' + esc(x.numero) + '</span><div><h3>' + esc(x.concepto) + '</h3><p>' + P.fechaCorta(x.fecha) + ' ' + x.fecha.slice(0, 4) +
+        (x.vence ? ' · vence ' + P.fechaCorta(x.vence) : '') + (x.archivo ? ' · con PDF' : ' · sin PDF') + '</p></div>' +
+        '<div style="display:grid;gap:6px;justify-items:end"><strong style="font-variant-numeric:tabular-nums;color:var(--c-text-strong)">' + P.euros(x.total_centimos) + '</strong>' +
+        (venc ? '<span class="pn-chip mal">Vencida</span>' : ESTADO[x.estado]) + '</div></li>';
+    }).join('') + '</ul><div class="pn-cuerpo" style="display:flex;gap:var(--s-2);justify-content:flex-end;border-top:1px solid var(--c-border)">' +
+      '<a class="pn-boton peq fantasma" href="' + P.enlace('admin/facturas/?cliente=' + encodeURIComponent(c.id)) + '">Ver en Facturas</a>' + nueva + '</div>';
   }
 
   /* ------------------- columna derecha ------------------------- */

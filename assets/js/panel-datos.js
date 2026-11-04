@@ -117,6 +117,18 @@
       { id: 'k5', cliente_id: 'c4', plazo_id: null, fecha: dia(-1), importe_centimos: 48000, metodo: 'transferencia', referencia: 'AMPA-OCT', notas: 'Octubre, patinaje' }
     ];
 
+    var facturas = [
+      { id: 'f1', cliente_id: 'c4', numero: 'F2026-0031', fecha: '2026-09-30', vence: '2026-10-30', concepto: 'Patinaje · septiembre', base_centimos: 48000, iva_pct: 0, iva_centimos: 0, irpf_centimos: 0, estado: 'cobrada', cobrada_en: '2026-10-28', archivo: 'demo.pdf' },
+      { id: 'f2', cliente_id: 'c4', numero: 'F2026-0044', fecha: '2026-10-31', vence: '2026-11-30', concepto: 'Patinaje · octubre', base_centimos: 48000, iva_pct: 0, iva_centimos: 0, irpf_centimos: 0, estado: 'pendiente', archivo: 'demo.pdf' },
+      { id: 'f3', cliente_id: 'c5', numero: 'F2026-0039', fecha: '2026-10-15', vence: '2026-10-25', concepto: 'Programa municipal · 1.er trimestre', base_centimos: 210000, iva_pct: 21, iva_centimos: 44100, irpf_centimos: 0, estado: 'pendiente', archivo: null, notas: 'Pendiente de que Intervención la apruebe.' },
+      { id: 'f4', cliente_id: 'c1', numero: 'F2026-0040', fecha: '2026-10-20', vence: null, concepto: 'Campamento de verano · Lucía', base_centimos: 39000, iva_pct: 0, iva_centimos: 0, irpf_centimos: 0, estado: 'parcial', archivo: 'demo.pdf' }
+    ];
+    function conTotal(f) {
+      var c = clientes.filter(function (x) { return x.id === f.cliente_id; })[0] || {};
+      return Object.assign({}, f, { total_centimos: f.base_centimos + f.iva_centimos - f.irpf_centimos,
+        cliente: { id: c.id, nombre: c.nombre || '—', nif: c.nif || '' } });
+    }
+
     function plazosDe(clienteId) {
       var ids = inscripciones.filter(function (i) { return i.cliente_id === clienteId; }).map(function (i) { return i.id; });
       return plazos.filter(function (p) { return ids.indexOf(p.inscripcion_id) >= 0; });
@@ -278,6 +290,33 @@
         q.notas = [q.notas, s.notas, s.email && q.email !== s.email ? 'Otro email: ' + s.email : ''].filter(Boolean).join('\n');
         clientes = clientes.filter(function (c) { return c.id !== seVa; });
         return espera(queda);
+      },
+
+      /* ---- facturas (las emite la contable; aquí se archivan) ---- */
+      listarFacturas: function (clienteId) {
+        if (modo === 'error') return fallo();
+        if (modo === 'vacio') return espera([]);
+        return espera(facturas.filter(function (f) { return !clienteId || f.cliente_id === clienteId; })
+          .map(conTotal).sort(function (a, b) { return a.fecha < b.fecha ? 1 : -1; }));
+      },
+      guardarFactura: function (d, archivo) {
+        var num = (d.numero || '').trim().toUpperCase();
+        if (facturas.some(function (f) { return f.numero.toUpperCase() === num && f.id !== d.id; })) {
+          var e = new Error('Ya hay una factura con el número ' + num);
+          e.duplicado = true;
+          return new Promise(function (_, mal) { setTimeout(function () { mal(e); }, 300); });
+        }
+        var f = d.id && facturas.filter(function (x) { return x.id === d.id; })[0];
+        if (!f) { f = { id: 'f' + (facturas.length + 100) }; facturas.push(f); }
+        Object.assign(f, d, { id: f.id, archivo: archivo ? 'demo.pdf' : (d.archivo || f.archivo || null) });
+        return espera(f.id);
+      },
+      cambiarEstadoFactura: function (id, estado) {
+        facturas.forEach(function (f) { if (f.id === id) { f.estado = estado; f.cobrada_en = estado === 'cobrada' ? hoy : null; } });
+        return espera(true);
+      },
+      abrirFactura: function () {
+        return Promise.reject(new Error('En la demostración no hay PDF de verdad'));
       }
     };
   }
@@ -418,6 +457,51 @@
       },
       unirClientes: function (queda, seVa) {
         return sb.rpc('unir_clientes', { p_queda: queda, p_se_va: seVa }).then(ok);
+      },
+
+      /* ---- facturas (las emite la contable; aquí se archivan) ---- */
+      listarFacturas: function (clienteId) {
+        var q = sb.from('facturas').select('*, cliente:clientes(id,nombre,nif)');
+        if (clienteId) q = q.eq('cliente_id', clienteId);
+        return q.order('fecha', { ascending: false }).then(ok);
+      },
+      /* Primero se sube el PDF (si hay) y luego se guarda la fila. Si la
+         fila no entra, el PDF subido se borra para no dejar huérfanos. */
+      guardarFactura: function (d, archivo) {
+        var ruta = null;
+        var subir = Promise.resolve();
+        if (archivo) {
+          var ext = (archivo.name.split('.').pop() || 'pdf').toLowerCase().replace(/[^a-z0-9]/g, '');
+          ruta = d.cliente_id + '/' + (d.numero || 'factura').replace(/[^A-Za-z0-9_-]+/g, '-') + '-' + Date.now() + '.' + ext;
+          subir = sb.storage.from('facturas').upload(ruta, archivo, { contentType: archivo.type || 'application/pdf', upsert: false })
+            .then(function (r) { if (r.error) throw new Error('No se pudo subir el PDF: ' + r.error.message); });
+        }
+        return subir.then(function () {
+          var fila = Object.assign({}, d);
+          delete fila.id; delete fila.total_centimos; delete fila.cliente;
+          if (ruta) fila.archivo = ruta;
+          var q = d.id ? sb.from('facturas').update(fila).eq('id', d.id).select('id') : sb.from('facturas').insert(fila).select('id');
+          return q.then(function (r) {
+            if (r.error) {
+              if (ruta) sb.storage.from('facturas').remove([ruta]);
+              var e = new Error(r.error.code === '23505' ? 'Ya hay una factura con el número ' + d.numero : r.error.message);
+              e.duplicado = r.error.code === '23505';
+              e.sinTablas = r.error.code === 'PGRST205' || r.error.code === '42P01';
+              throw e;
+            }
+            return r.data[0].id;
+          });
+        });
+      },
+      cambiarEstadoFactura: function (id, estado) {
+        return sb.from('facturas').update({ estado: estado, cobrada_en: estado === 'cobrada' ? hoy : null }).eq('id', id).then(ok);
+      },
+      /* enlace temporal (2 minutos) al PDF privado */
+      abrirFactura: function (ruta) {
+        return sb.storage.from('facturas').createSignedUrl(ruta, 120).then(function (r) {
+          if (r.error) throw new Error(r.error.message);
+          return r.data.signedUrl;
+        });
       }
     };
   }

@@ -145,8 +145,9 @@
       var ninos = c.personas.filter(function (p) { return p.rol === 'participante'; }).map(function (p) { return p.nombre.split(' ')[0]; });
       var sub = c.tipo === 'familia' ? (ninos.length ? ninos.join(', ') : 'Sin niños apuntados') : (c.email || c.telefono || '');
       return '<tr>' +
-        '<td data-titulo="Cliente"><div><a href="' + P.enlace('admin/clientes/ficha/?id=' + encodeURIComponent(c.id)) + '">' + esc(c.nombre) + '</a>' +
-          '<span class="sub">' + esc(sub) + '</span></div></td>' +
+        '<td data-titulo="Cliente" class="principal"><div class="pn-con-iniciales"><span class="pn-iniciales" aria-hidden="true">' + esc(P.iniciales(c.nombre)) + '</span>' +
+          '<div><a href="' + P.enlace('admin/clientes/ficha/?id=' + encodeURIComponent(c.id)) + '">' + esc(c.nombre) + '</a>' +
+          '<span class="sub">' + esc(sub) + '</span></div></div></td>' +
         '<td data-titulo="Tipo" class="ancho-solo">' + esc(TIPOS[c.tipo] || c.tipo) + '</td>' +
         '<td data-titulo="Inscripciones" class="num ancho-solo">' + c.inscripciones_activas + '</td>' +
         '<td data-titulo="Pagos">' + estadoPagos(c) + '</td>' +

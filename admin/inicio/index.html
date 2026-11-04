@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio — Gestión de Ítaka</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../assets/img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../assets/css/itaka.css">
+<link rel="stylesheet" href="../../assets/css/panel-tokens.css">
+<link rel="stylesheet" href="../../assets/css/panel.css">
+<style>
+  .cobrar-ya { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: var(--s-3); padding: var(--s-4); }
+  .cobrar-ya .pn-tarjeta { display: grid; gap: var(--s-2); padding: var(--s-3) var(--s-4); }
+  .cobrar-ya .arriba { display: flex; align-items: center; gap: var(--s-3); }
+  .cobrar-ya .importe { margin-left: auto; font-weight: 700; color: var(--c-text-strong); font-variant-numeric: tabular-nums; }
+  .cobrar-ya .detalle { font: 400 12px/17px var(--f-mono); color: var(--c-text-muted); }
+  .atajos { display: grid; gap: var(--s-2); padding: var(--s-4); }
+</style>
+</head>
+<body class="panel" data-seccion="inicio" data-ruta="Inicio" data-raiz="../../">
+
+<main class="pn-pagina" id="contenido">
+  <div class="pn-cabecera">
+    <div>
+      <p class="pn-antetitulo" id="fecha">Gestión / Inicio</p>
+      <h1 id="saludo">Hola.</h1>
+      <p class="pn-subtitulo" id="resumen">Un momento, mirando cómo va todo…</p>
+    </div>
+  </div>
+
+  <dl class="pn-cifras" id="cifras" aria-busy="true">
+    <div><dt>Vencido</dt><dd><span class="pn-esqueleto" style="width:90px;height:28px"></span></dd></div>
+    <div><dt>Devuelto</dt><dd><span class="pn-esqueleto" style="width:70px;height:28px"></span></dd></div>
+    <div><dt>Cobrado este mes</dt><dd><span class="pn-esqueleto" style="width:90px;height:28px"></span></dd></div>
+    <div><dt>Inscripciones activas</dt><dd><span class="pn-esqueleto" style="width:50px;height:28px"></span></dd></div>
+  </dl>
+
+  <div class="pn-columnas">
+    <div style="display:grid;gap:var(--s-5)">
+      <section class="pn-tarjeta" aria-labelledby="t-agenda">
+        <div class="pn-cab"><h2 id="t-agenda">Agenda</h2><span class="pn-marca-titulo">próximos 7 días</span><span style="flex:1"></span>
+          <a class="pn-enlace" id="ver-cobros" href="../cobros/">Ver cobros →</a></div>
+        <ul class="pn-filas" id="agenda" aria-busy="true"><li><div><span class="pn-esqueleto" style="width:240px"></span></div></li></ul>
+      </section>
+      <section class="pn-tarjeta" aria-labelledby="t-cobrar">
+        <div class="pn-cab"><h2 id="t-cobrar">Cobrar ya</h2><span class="pn-marca-titulo" id="cuenta-cobrar">—</span></div>
+        <div class="cobrar-ya" id="cobrar"></div>
+      </section>
+    </div>
+    <aside>
+      <section class="pn-tarjeta" aria-labelledby="t-nuevos">
+        <div class="pn-cab"><h2 id="t-nuevos">Novedades</h2><span class="pn-marca-titulo">esta semana</span></div>
+        <ul class="pn-filas" id="nuevos"></ul>
+      </section>
+      <section class="pn-tarjeta" aria-labelledby="t-atajos">
+        <div class="pn-cab"><h2 id="t-atajos">Atajos</h2></div>
+        <div class="atajos">
+          <a class="pn-boton primario" id="a-nuevo" href="../clientes/editar/"><i data-lucide="plus" aria-hidden="true"></i>Nuevo cliente</a>
+          <a class="pn-boton" id="a-cobros" href="../cobros/"><i data-lucide="wallet" aria-hidden="true"></i>Cobros pendientes</a>
+          <a class="pn-boton" id="a-importar" href="../clientes/importar/"><i data-lucide="contact" aria-hidden="true"></i>Importar contactos</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="../../assets/js/db.js"></script>
+<script src="../../assets/js/panel.js"></script>
+<script src="../../assets/js/panel-datos.js"></script>
+<script src="../../assets/js/panel-inicio.js"></script>
+</body>
+</html>

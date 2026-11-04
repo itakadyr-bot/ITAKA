@@ -158,6 +158,24 @@
     return '<span class="pn-chip">Pendiente</span>';
   }
 
+  /* El estado se cambia en la propia tabla: elegir «Cobrado…» abre la
+     ventana de apuntar ya rellena, y hay que confirmarla. */
+  function selectorEstado(p) {
+    var actual = p.estado === 'devuelto' ? 'devuelto' : (p.vence < hoy ? 'vencido' : 'pendiente');
+    var texto = { devuelto: 'Devuelto', vencido: 'Vencido', pendiente: 'Pendiente' }[actual];
+    if (actual === 'vencido') {
+      var dias = Math.round((new Date(hoy) - new Date(p.vence)) / 864e5);
+      texto += ' · ' + dias + (dias === 1 ? ' día' : ' días');
+    }
+    return '<label class="solo-lector" for="e-' + esc(p.id) + '">Estado de ' + esc(p.concepto) + '</label>' +
+      '<select class="pn-estado" id="e-' + esc(p.id) + '" data-plazo="' + esc(p.id) + '" data-estado="' + actual + '">' +
+      '<option value="">' + texto + '</option>' +
+      '<option value="efectivo">Cobrado · efectivo</option>' +
+      '<option value="transferencia">Cobrado · transferencia</option>' +
+      '<option value="tarjeta">Cobrado · datáfono</option>' +
+      '<option value="parcial">Pago parcial…</option></select>';
+  }
+
   function forma(p) {
     if (p.estado === 'cobrado') return esc(METODO[p.metodo] || '—');
     return p.sepa_posible ? 'Domiciliado' : '<span style="color:var(--c-text-muted)">Sin domiciliar</span>';
@@ -203,9 +221,8 @@
         '<td data-titulo="' + (p.estado === 'cobrado' ? 'Cobrado' : 'Vence') + '">' + fecha + '</td>' +
         '<td data-titulo="Cliente" class="principal"><div><a href="' + ficha + '">' + esc(p.cliente ? p.cliente.nombre : '—') + '</a><span class="sub">' + esc(sub) + '</span>' + motivo + '</div></td>' +
         '<td data-titulo="Forma" class="ancho-solo">' + forma(p) + '</td>' +
-        '<td data-titulo="Estado">' + chip(p) + '</td>' +
+        '<td data-titulo="Estado">' + (cobrable(p) ? selectorEstado(p) : chip(p)) + '</td>' +
         '<td data-titulo="Importe" class="num">' + P.euros(p.importe_centimos) + '</td>' +
-        '<td data-titulo="">' + (cobrable(p) ? '<button class="pn-boton peq" data-apuntar="' + esc(p.id) + '">Apuntar</button>' : '') + '</td>' +
       '</tr>';
     }).join('');
 
@@ -291,10 +308,12 @@
   var form = document.getElementById('form-cobro');
   var abridor = null;
 
-  filas.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-apuntar]');
-    if (!b) return;
-    enCurso = plazos.filter(function (p) { return p.id === b.getAttribute('data-apuntar'); })[0];
+  filas.addEventListener('change', function (e) {
+    var b = e.target.closest('select.pn-estado');
+    if (!b || !b.value) return;
+    var eleccion = b.value;
+    b.value = '';              /* vuelve a su estado hasta que se confirme */
+    enCurso = plazos.filter(function (p) { return p.id === b.getAttribute('data-plazo'); })[0];
     if (!enCurso) return;
     abridor = b;
     document.getElementById('modal-detalle').textContent = enCurso.cliente.nombre + ' · ' + enCurso.concepto + ' · ' + P.euros(enCurso.importe_centimos);
@@ -305,10 +324,11 @@
     f.value = hoy; f.max = hoy;
     document.getElementById('c-ref').value = '';
     document.getElementById('c-notas').value = '';
-    document.getElementById('c-metodo').value = enCurso.estado === 'devuelto' ? 'transferencia' : 'efectivo';
+    document.getElementById('c-metodo').value = eleccion === 'parcial' ? (enCurso.estado === 'devuelto' ? 'transferencia' : 'efectivo') : eleccion;
     limpiarErrores();
     modal.showModal();
-    imp.focus(); imp.select();
+    if (eleccion === 'parcial') { imp.value = ''; imp.focus(); }
+    else document.getElementById('c-guardar').focus();
   });
   document.getElementById('c-cancelar').addEventListener('click', function () { modal.close(); });
   modal.addEventListener('close', function () { if (abridor && document.body.contains(abridor)) abridor.focus(); });

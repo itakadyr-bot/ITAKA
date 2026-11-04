@@ -8,7 +8,7 @@
 <link rel="icon" href="../../assets/img/icono.png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../../assets/css/itaka.css">
 <link rel="stylesheet" href="../../assets/css/panel-tokens.css">
 <link rel="stylesheet" href="../../assets/css/panel.css">
@@ -58,14 +58,13 @@
               <th scope="col" class="ancho-solo">Forma</th>
               <th scope="col">Estado</th>
               <th scope="col" class="num">Importe</th>
-              <th scope="col"><span class="solo-lector">Acciones</span></th>
             </tr></thead>
             <tbody id="filas">
               <tr><td colspan="7"><span class="pn-esqueleto" style="width:60%"></span></td></tr>
               <tr><td colspan="7"><span class="pn-esqueleto" style="width:75%"></span></td></tr>
               <tr><td colspan="7"><span class="pn-esqueleto" style="width:50%"></span></td></tr>
             </tbody>
-            <tfoot id="pie" hidden><tr><td></td><td colspan="4" id="pie-texto">Total</td><td class="num" id="pie-total"></td><td></td></tr></tfoot>
+            <tfoot id="pie" hidden><tr><td></td><td colspan="4" id="pie-texto">Total</td><td class="num" id="pie-total"></td></tr></tfoot>
           </table>
         </div>
         <div id="sin-filas" hidden></div>
@@ -94,7 +93,7 @@
         <div class="pn-cab"><h2 id="titulo-como">Cómo funciona</h2></div>
         <ul class="pn-filas">
           <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Domiciliados</h3><p>Se cobran por SEPA. El banco tarda unos días: mientras, salen «En el banco».</p></div></li>
-          <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Efectivo o transferencia</h3><p>Pulsa «Apuntar». Si pagan una parte, el resto queda pendiente con la misma fecha.</p></div></li>
+          <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Efectivo o transferencia</h3><p>Cambia el estado en la tabla a «Cobrado» y confírmalo. Si pagan una parte, elige «Pago parcial»: el resto queda pendiente con la misma fecha.</p></div></li>
           <li style="grid-template-columns:minmax(0,1fr)"><div><h3>Devueltos</h3><p>Se pueden volver a pasar por SEPA o apuntar si pagan de otra forma.</p></div></li>
         </ul>
       </section>

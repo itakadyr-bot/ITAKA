@@ -26,12 +26,12 @@
   var ICONO = {
     inicio: 'layout-dashboard', clientes: 'users', cobros: 'wallet',
     actividades: 'calendar-days', equipo: 'id-card', gastos: 'receipt',
-    campamentos: 'tent'
+    campamentos: 'tent', facturas: 'file-text'
   };
 
   /* Lo que hay hecho y lo que llega después. «pronto» sale en gris. */
   var PRINCIPAL = [
-    { id: 'inicio', texto: 'Resumen', href: 'admin/inicio/', pronto: true },
+    { id: 'inicio', texto: 'Inicio', href: 'admin/inicio/' },
     { id: 'clientes', texto: 'Clientes', href: 'admin/clientes/' },
     { id: 'cobros', texto: 'Cobros', href: 'admin/cobros/' },
     { id: 'actividades', texto: 'Actividades', href: 'admin/actividades/', pronto: true }
@@ -41,6 +41,7 @@
       { id: 'equipo', texto: 'Monitores', href: 'admin/equipo/', pronto: true }
     ] },
     { titulo: 'Dinero', enlaces: [
+      { id: 'facturas', texto: 'Facturas', href: 'admin/facturas/' },
       { id: 'gastos', texto: 'Gastos', href: 'admin/gastos/', pronto: true }
     ] },
     { titulo: 'Web', enlaces: [
@@ -127,7 +128,8 @@
 
   /* ------------------- utilidades ----------------------------- */
 
-  var euros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+  /* useGrouping 'always': «3.411,00 €» (por defecto el español no separa las de 4 cifras) */
+  var euros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', useGrouping: 'always' });
   var fechaCorta = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
   var fechaLarga = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -208,6 +210,14 @@
       return e;
     },
     hoy: function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); },
+    /* «Familia Ortega Ruiz» → OR · «AMPA CEIP Los Almendros» → AC */
+    iniciales: function (nombre) {
+      var fuera = /^(familia|de|del|la|las|el|los|y|e|i|ceip|ies|cp|ampa|ayuntamiento|ajuntament|colegio|club)$/i;
+      var p = String(nombre || '').replace(/[()·,.]/g, ' ').split(/\s+/).filter(Boolean);
+      var buenas = p.filter(function (x) { return !fuera.test(x); });
+      var l = (buenas.length ? buenas : p).slice(0, 2).map(function (x) { return x[0]; }).join('');
+      return (l || '·').toUpperCase();
+    },
     avisar: avisar,
     iconos: iconos,
     entrar: entrar,
