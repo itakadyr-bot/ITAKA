@@ -98,7 +98,8 @@ body.web img { display: block; max-width: 100%; }
   border-bottom: 1px solid var(--w-borde);
 }
 .web .cab--clara .cab-caja { max-width: var(--w-ancho); padding: 12px 24px; }
-.web .cab--clara .cab-logo img { height: 38px; }
+.web .cab--clara .cab-logo { flex-shrink: 0; }
+.web .cab--clara .cab-logo img { height: 38px; width: auto; max-width: none; }
 .web .cab--clara .cab-nav { background: transparent; border: 0; padding: 0; gap: 2px; font: 600 15px var(--w-texto); }
 .web .cab--clara .cab-nav a { color: var(--w-hondo); padding: 10px 16px; }
 .web .cab--clara .cab-nav a:hover { background: var(--w-nube); color: var(--w-azul); }
@@ -111,6 +112,14 @@ body.web img { display: block; max-width: 100%; }
 .web .cab--clara .cab-cta:hover { background: var(--w-azul-oscuro); color: #fff; }
 .web .cab--clara .cab-burger { background: var(--w-nube); border-color: var(--w-borde); }
 .web .cab--clara .cab-burger span { background: var(--w-hondo); }
+@media (min-width: 921px) and (max-width: 1180px) {
+  .web .cab--clara .cab-caja { padding-left: 18px; padding-right: 18px; }
+  .web .cab--clara .cab-nav { font-size: 14px; }
+  .web .cab--clara .cab-nav a { padding: 9px 10px; }
+  .web .cab--clara .cab-cta { font-size: 14px; padding: 11px 16px; }
+}
+/* entre 921 y 1000 px no cabe todo: «Inicio» sobra porque el logo ya lleva a la portada */
+@media (min-width: 921px) and (max-width: 1000px) { .web .cab--clara .cab-nav > a:first-child { display: none; } }
 @media (max-width: 920px) {
   .web .cab--clara .cab-nav {
     display: flex; flex-direction: column; align-items: stretch; gap: 2px;
