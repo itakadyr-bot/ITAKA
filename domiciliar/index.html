@@ -5,30 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Domiciliar el resto — Ítaka Deporte y Recreación</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="../assets/img/icono.png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../assets/css/itaka.css">
+<link rel="stylesheet" href="../assets/css/web.css">
+<script src="../assets/js/itaka.js" defer></script>
+<script src="../assets/js/web.js" defer></script>
 </head>
-<body style="min-height:100vh;display:flex;flex-direction:column;background:#0b121b">
+<body class="web">
 
-<main style="margin:auto;width:100%;max-width:480px;padding:24px">
-  <a href="../" style="display:flex;justify-content:center;margin-bottom:26px"><img src="../assets/img/logo-blanco.png" alt="Ítaka Deporte y Recreación" style="height:52px;width:auto"></a>
-  <div style="background:#fff;border-radius:24px;padding:30px 28px;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 70px -30px rgba(0,0,0,.7)">
-    <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;margin:0;line-height:1.05">Domiciliar el resto del campamento</h1>
+<header class="cab cab--clara">
+  <div class="cab-caja">
+    <a href="../" class="cab-logo"><img src="../assets/img/logo-color.png" alt="Ítaka Deporte y Recreación" width="113" height="38"></a>
+    <nav class="cab-nav" id="cab-menu" aria-label="Principal">
+      <a href="../">Inicio</a>
+      <div class="cab-item">
+        <a href="../servicios/">Qué hacemos</a>
+        <div class="cab-sub">
+          <a href="../campamentos/">Campamentos de verano</a>
+          <a href="../campus/">Campus de vacaciones</a>
+          <a href="../extraescolares/">Extraescolares</a>
+          <a href="../mayores/">Mayores y salud</a>
+          <a href="../servicios/#eventos">Eventos deportivos</a>
+          <a href="../celebraciones/">Bodas y celebraciones</a>
+          <a href="../servicios/#material">Alquiler de material</a>
+        </div>
+      </div>
+      <a href="../instituciones/">Ayuntamientos y colegios</a>
+      <a href="../campamentos/">Campamentos</a>
+      <a href="../nosotros/">Nosotros</a>
+      <a href="../contacto/">Contacto</a>
+      <a href="../contacto/" class="solo-movil">Pide presupuesto</a>
+    </nav>
+    <a href="../contacto/" class="cab-cta">Pide presupuesto</a>
+    <button class="cab-burger" type="button" aria-label="Abrir el menú" aria-expanded="false" aria-controls="cab-menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
 
-    <div id="dom-vuelta" hidden style="border:1px solid;border-radius:14px;padding:14px 16px;font-size:14.5px;line-height:1.55"></div>
+<main>
+<section class="w-cabecera-pagina">
+  <div class="w-caja" style="max-width:640px">
+    <h1 style="font-size:clamp(32px,4.4vw,46px)">Domiciliar el resto del campamento</h1>
+  </div>
+</section>
 
-    <div id="dom-cuerpo">
-      <p style="margin:0 0 10px;font-size:15px;line-height:1.6;color:#4a5a6c">La señal ya está pagada. El resto se paga en plazos, y lo más cómodo es <strong>domiciliarlos</strong>: autorizas el cargo en tu cuenta una sola vez y cada plazo se carga solo en su fecha. Sin transferencias ni justificantes.</p>
-      <p style="margin:0 0 10px;font-size:15px;line-height:1.6;color:#4a5a6c">El IBAN se introduce en la <strong>página segura de Stripe</strong>: nunca pasa por nuestra web. Te avisará tu banco de cada cargo, como con cualquier recibo.</p>
-      <p style="margin:0 0 16px;font-size:13.5px;line-height:1.55;color:#8494a4">Las fechas e importes de los plazos son los comunicados en la inscripción. Cualquier duda: 604 93 59 85.</p>
-      <button id="dom-boton" type="button" style="width:100%;background:#0075c4;color:#fff;border:0;border-radius:999px;padding:16px;font:700 16px Barlow,sans-serif;cursor:pointer" class="hv14">Autorizar la domiciliación</button>
-      <p id="dom-aviso" style="margin:10px 0 0;font-size:13.5px;line-height:1.5;color:#8494a4"></p>
+<section class="w-seccion w-seccion--nube" style="padding-top:clamp(32px,5vw,56px)">
+  <div class="w-caja" style="max-width:640px">
+    <div class="w-tarjeta" style="padding:clamp(22px,4vw,32px);gap:14px">
+
+      <div id="dom-vuelta" hidden style="border:1px solid;border-radius:var(--w-radio-s);padding:14px 16px;font-size:15.5px;line-height:1.55;color:var(--w-hondo)"></div>
+
+      <div id="dom-cuerpo">
+        <p style="margin:0 0 12px;font-size:16px;line-height:1.6;color:var(--w-tinta)">La señal ya está pagada. El resto se paga en plazos, y lo más cómodo es <strong>domiciliarlos</strong>: autorizas el cargo en tu cuenta una sola vez y cada plazo se carga solo en su fecha. Sin transferencias ni justificantes.</p>
+        <p style="margin:0 0 12px;font-size:16px;line-height:1.6;color:var(--w-tinta)">El IBAN se introduce en la <strong>página segura de Stripe</strong>: nunca pasa por nuestra web. Te avisará tu banco de cada cargo, como con cualquier recibo.</p>
+        <p style="margin:0 0 20px;font-size:14px;line-height:1.55;color:var(--w-gris)">Las fechas e importes de los plazos son los comunicados en la inscripción. Cualquier duda: 604 93 59 85.</p>
+        <button id="dom-boton" type="button" class="w-boton" style="width:100%">Autorizar la domiciliación</button>
+        <p id="dom-aviso" style="margin:10px 0 0;font-size:14px;line-height:1.5;color:var(--w-gris)"></p>
+      </div>
     </div>
   </div>
+</section>
 </main>
+
+<footer class="w-pie-web">
+  <div class="w-caja">
+    <div>
+      <img src="../assets/img/logo-color.png" alt="Ítaka Deporte y Recreación" style="height:44px;width:auto" data-edit-img="logo-pie" loading="lazy" decoding="async">
+      <p data-edit="alicante-espana-38e8">Alicante, España</p>
+      <div class="w-redes">
+        <a href="https://www.instagram.com/itakadyr/" target="_blank" rel="noopener" aria-label="Instagram de Ítaka"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://www.facebook.com/itakadyr" target="_blank" rel="noopener" aria-label="Facebook de Ítaka"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.7c0-.9.3-1.6 1.6-1.6h1.7V4.2c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.4V14h2.7v8z"/></svg></a>
+        <a href="https://www.google.com/maps/search/%C3%8Dtaka+Deporte+y+Recreaci%C3%B3n+Alicante" target="_blank" rel="noopener" aria-label="Reseñas de Ítaka en Google">★ 5,0 en Google</a>
+      </div>
+    </div>
+    <nav aria-labelledby="pie-familias">
+      <h2 id="pie-familias" data-edit="pie-familias">Para familias</h2>
+      <a href="../campamentos/" data-edit="campamentos-b769">Campamentos</a>
+      <a href="../campus/" data-edit="pie-campus">Campus de vacaciones</a>
+      <a href="../extraescolares/" data-edit="escuelas-deportivas-f25d">Extraescolares</a>
+      <a href="../celebraciones/" data-edit="bodas-y-celebraciones-pie">Bodas y celebraciones</a>
+    </nav>
+    <nav aria-labelledby="pie-instituciones">
+      <h2 id="pie-instituciones" data-edit="pie-instituciones">Para instituciones</h2>
+      <a href="../instituciones/" data-edit="pie-ayuntamientos">Ayuntamientos y colegios</a>
+      <a href="../mayores/" data-edit="pie-mayores">Mayores y salud</a>
+      <a href="../servicios/#eventos" data-edit="eventos-deportivos-b0c1">Eventos deportivos</a>
+      <a href="../servicios/#material" data-edit="pie-material">Alquiler de material</a>
+    </nav>
+    <nav aria-labelledby="pie-itaka">
+      <h2 id="pie-itaka" data-edit="itaka-4c14">Ítaka</h2>
+      <a href="../nosotros/" data-edit="nosotros-c734-2">Nosotros</a>
+      <a href="../nosotros/#garantias" data-edit="garantias-y-seguridad-e691">Garantías y seguridad</a>
+      <a href="../contacto/" data-edit="contacto-0a25">Contacto</a>
+      <a href="tel:+34698979952">698 979 952</a>
+      <a href="mailto:info@itakarecreacion.com" data-edit="itakadyr-gmail-com-eaed-2">info@itakarecreacion.com</a>
+    </nav>
+  </div>
+  <div class="w-legal"><div class="w-caja"><span data-edit="2026-itaka-deporte-y-recreacion-e9a4">© 2026 Ítaka Deporte y Recreación</span><a href="../legal/#aviso-legal" data-edit="aviso-legal-236a">Aviso legal</a><a href="../legal/#privacidad" data-edit="privacidad-965c">Privacidad</a><a href="../legal/#cookies" data-edit="cookies-597b">Cookies</a></div></div>
+</footer>
 
 <script src="../assets/js/db.js"></script>
 <script>
